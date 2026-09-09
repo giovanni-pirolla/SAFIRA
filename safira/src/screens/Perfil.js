@@ -1,9 +1,13 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, TouchableOpacity, Pressable, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, Pressable, ScrollView, Image, Alert, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { supabase } from '../services/supabase';
 import { logout } from '../services/authService';
+import { useAuth } from '../contexts/AuthContext';
 import styles from './estilos/PerfilEstilos';
+import * as ImagePicker from 'expo-image-picker';
+
+// ... (ResumoCard e LimiteSensorial componentes permanecem os mesmos) ...
 
 function ResumoCard({ emoji, corFundo, valor, label }) {
   return (
@@ -18,7 +22,11 @@ function ResumoCard({ emoji, corFundo, valor, label }) {
 }
 
 function LimiteSensorial({ emoji, corIcone, titulo, recomendado, valorAtual, min, max, corBarra }) {
-  const progresso = max > min ? ((valorAtual - min) / (max - min)) * 100 : 0;
+  const safeMin = Number(min) || 0;
+  const safeMax = Number(max) || 1;
+  const safeValorAtual = Number(valorAtual) || 0;
+
+  const progresso = safeMax > safeMin ? ((safeValorAtual - safeMin) / (safeMax - safeMin)) * 100 : 0;
   const progressoSeguro = Math.max(0, Math.min(100, progresso));
 
   return (
@@ -56,6 +64,26 @@ export default function Perfil({ navigation }) {
   const [diasDeUso, setDiasDeUso] = useState(0);
   const [configuracaoPrincipal, setConfiguracaoPrincipal] = useState(null);
   const [carregando, setCarregando] = useState(true);
+  const [uploading, setUploading] = useState(false);
+
+  const { session } = useAuth(); // <--- session obtida aqui
+
+  // Valores padrão para os limites caso não existam no perfil do usuário
+  const limitesSomPadrao = {
+    confortavel_ate: 50, atencao_de: 51, atencao_ate: 70, desconfortavel_acima: 71,
+    texto_confortavel: 'até 50 dB', texto_atencao: '51 - 70 dB', texto_desconfortavel: 'acima de 70 dB'
+  };
+  const limitesLuzPadrao = {
+    confortavel_ate: 300, atencao_de: 301, atencao_ate: 700, desconfortavel_acima: 701,
+    texto_confortavel: 'até 300 lux', texto_atencao: '301 - 700 lux', texto_desconfortavel: 'acima de 700 lux'
+  };
+
+  const limitesSom = usuario?.limites_som || limitesSomPadrao;
+  const limitesLuz = usuario?.limites_luz || limitesLuzPadrao;
+
+  // Valores de referência para a barra de progresso (pode ajustar a lógica)
+  const valorAtualRuido = (limitesSom.atencao_de + limitesSom.atencao_ate) / 2;
+  const valorAtualLuminosidade = (limitesLuz.atencao_de + limitesLuz.atencao_ate) / 2;
 
   const carregarPerfil = useCallback(async () => {
     setCarregando(true);
@@ -68,30 +96,47 @@ export default function Perfil({ navigation }) {
       return;
     }
 
-    const { data: perfil } = await supabase
+    const { data: perfil, error: perfilError } = await supabase
       .from('usuario')
       .select('*')
       .eq('id', idusuario)
       .single();
-    setUsuario(perfil);
 
-    const { data: dispositivos, count: qtdDispositivos } = await supabase
+    if (perfilError) {
+      console.error('Erro ao carregar perfil do usuário:', perfilError.message);
+      setUsuario(null);
+    } else {
+      setUsuario(perfil);
+    }
+
+    const { data: dispositivos, count: qtdDispositivos, error: dispositivosError } = await supabase
       .from('dispositivos')
       .select('iddispositivos, configuracaododispositivo(*)', { count: 'exact' })
       .eq('idusuario', idusuario);
 
-    setTotalDispositivos(qtdDispositivos ?? 0);
+    if (dispositivosError) {
+      console.error('Erro ao carregar dispositivos:', dispositivosError.message);
+      setTotalDispositivos(0);
+    } else {
+      setTotalDispositivos(qtdDispositivos ?? 0);
+    }
 
     if (dispositivos && dispositivos.length > 0) {
       const idsDispositivos = dispositivos.map((d) => d.iddispositivos);
 
-      const { count: qtdLeituras } = await supabase
+      const { count: qtdLeituras, error: leiturasError } = await supabase
         .from('leituradossensores')
         .select('*', { count: 'exact', head: true })
         .in('iddispositivos', idsDispositivos);
-      setTotalLeituras(qtdLeituras ?? 0);
 
-      const { data: primeiraLeitura } = await supabase
+      if (leiturasError) {
+        console.error('Erro ao carregar leituras:', leiturasError.message);
+        setTotalLeituras(0);
+      } else {
+        setTotalLeituras(qtdLeituras ?? 0);
+      }
+
+      const { data: primeiraLeitura, error: primeiraLeituraError } = await supabase
         .from('leituradossensores')
         .select('data_hora')
         .in('iddispositivos', idsDispositivos)
@@ -99,7 +144,10 @@ export default function Perfil({ navigation }) {
         .limit(1)
         .single();
 
-      if (primeiraLeitura?.data_hora) {
+      if (primeiraLeituraError) {
+        console.error('Erro ao carregar primeira leitura:', primeiraLeituraError.message);
+        setDiasDeUso(0);
+      } else if (primeiraLeitura?.data_hora) {
         const diffMs = new Date() - new Date(primeiraLeitura.data_hora);
         const diffDias = Math.max(1, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
         setDiasDeUso(diffDias);
@@ -113,26 +161,43 @@ export default function Perfil({ navigation }) {
         const config = disp.configuracaododispositivo;
         if (!config) continue;
 
-        const { data: leiturasHoje } = await supabase
+        const { data: leiturasHoje, error: leiturasHojeError } = await supabase
           .from('leituradossensores')
           .select('*')
           .eq('iddispositivos', disp.iddispositivos)
           .gte('data_hora', inicioHoje.toISOString());
 
-        (leiturasHoje ?? []).forEach((l) => {
-          if (
-            Number(l.luminosidade) > Number(config.max_luminosidade) ||
-            Number(l.temperatura) > Number(config.max_temperatura) ||
-            Number(l.ruidos) > Number(config.max_ruidos)
-          ) {
-            contadorAlertas += 1;
+        if (leiturasHojeError) {
+          console.error('Erro ao carregar leituras de hoje:', leiturasHojeError.message);
+          continue;
+        }
+
+        leiturasHoje?.forEach((leitura) => {
+          if (leitura.ruido > config.max_ruido || leitura.luminosidade > config.max_luminosidade || leitura.temperatura > config.max_temperatura) {
+            contadorAlertas++;
           }
         });
       }
       setAlertasHoje(contadorAlertas);
 
-      const primeiraConfig = dispositivos.find((d) => d.configuracaododispositivo)?.configuracaododispositivo;
-      setConfiguracaoPrincipal(primeiraConfig ?? null);
+      const { data: configPrincipalData, error: configPrincipalError } = await supabase
+        .from('configuracaododispositivo')
+        .select('*')
+        .eq('iddispositivo', dispositivos[0].iddispositivos)
+        .single();
+
+      if (configPrincipalError) {
+        console.error('Erro ao carregar configuração principal:', configPrincipalError.message);
+        setConfiguracaoPrincipal(null);
+      } else {
+        setConfiguracaoPrincipal(configPrincipalData);
+      }
+
+    } else {
+      setTotalLeituras(0);
+      setDiasDeUso(0);
+      setAlertasHoje(0);
+      setConfiguracaoPrincipal(null);
     }
 
     setCarregando(false);
@@ -142,14 +207,96 @@ export default function Perfil({ navigation }) {
     carregarPerfil();
   }, [carregarPerfil]);
 
-  async function handleSair() {
+  const handleSair = async () => {
     await logout();
-    // AuthContext detecta o logout e redireciona automaticamente para Login
-  }
+  };
+
+  // --- Funções para a foto de perfil ---
+  // Adicione a URL da sua Edge Function aqui.
+  const EDGE_FUNCTION_URL = 'https://nvsxblxkbwyrrvsueclr.supabase.co/functions/v1/upload-avatar';
+
+  const uploadImage = async (uri, currentSession) => {
+    if (!currentSession?.user?.id) {
+      Alert.alert('Erro', 'Usuário não autenticado.');
+      return;
+    }
+
+    setUploading(true);
+
+    try {
+      // 1. Preparar o arquivo para envio
+      const response = await fetch(uri);
+      const blob = await response.blob();
+
+      // Extrair o nome do arquivo e extensão para o FormData
+      const fileExt = uri.split('.').pop();
+      const cleanFileExt = fileExt ? fileExt.split('?')[0].split('#')[0] : 'png';
+      const fileName = `${currentSession.user.id}.${cleanFileExt}`;
+
+      // Criar um FormData para enviar a imagem para a Edge Function
+      const formData = new FormData();
+      formData.append('image', {
+        uri: uri,
+        name: fileName, // Nome do arquivo que a Edge Function vai receber
+        type: blob.type, // Tipo MIME do arquivo
+      });
+
+      // 2. Fazer a requisição para a Edge Function
+      const res = await fetch(EDGE_FUNCTION_URL, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${currentSession.access_token}`, // Envia o token do usuário para a Edge Function
+          // 'Content-Type': 'multipart/form-data' // Não defina Content-Type aqui, o fetch faz isso automaticamente com FormData
+        },
+        body: formData, // Envia a imagem no corpo da requisição
+      });
+
+      // 3. Processar a resposta da Edge Function
+      const data = await res.json();
+
+      if (!res.ok) {
+        // Se a resposta não for OK (status 2xx), significa que houve um erro na Edge Function
+        console.error('Erro da Edge Function:', data.error);
+        throw new Error(data.error || 'Erro desconhecido ao fazer upload pela Edge Function.');
+      }
+
+      const publicUrl = data.publicUrl; // A Edge Function retorna a URL pública
+
+      // 4. Atualizar o estado local e exibir mensagem de sucesso
+      setUsuario(prev => ({ ...prev, avatar_url: publicUrl }));
+      Alert.alert('Sucesso', 'Foto de perfil atualizada!');
+
+    } catch (error) {
+      console.error('Erro ao fazer upload da imagem:', error.message);
+      Alert.alert('Erro', 'Não foi possível atualizar a foto de perfil.');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const pickImage = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permissão necessária', 'Precisamos da permissão para acessar sua galeria para definir a foto de perfil.');
+      return;
+    }
+
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['image'], // <--- CORREÇÃO AQUI para usar array de string
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.5,
+    });
+
+    if (!result.canceled) {
+      const uri = result.assets[0].uri;
+      await uploadImage(uri, session);
+    }
+  };
+  // --- Fim das funções para a foto de perfil ---
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Cabeçalho */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
           <Text style={styles.backButtonText}>{'<'}</Text>
@@ -161,11 +308,16 @@ export default function Perfil({ navigation }) {
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <Text style={styles.secaoTitulo}>Definições do Perfil</Text>
 
-        {/* Cartão do usuário */}
         <View style={styles.userCard}>
-          <View style={styles.avatarCircle}>
-            <Text style={styles.avatarIcone}>👤</Text>
-          </View>
+          <Pressable onPress={pickImage} style={styles.avatarCircle}>
+            {uploading ? (
+              <ActivityIndicator size="small" color="#FFFFFF" />
+            ) : usuario?.avatar_url ? (
+                <Image source={{ uri: usuario.avatar_url }} style={styles.avatarImage} />
+              ) : (
+                <Text style={styles.avatarIcone}>👤</Text>
+              )}
+          </Pressable>
 
           <View style={styles.userInfo}>
             <Text style={styles.userNome}>{usuario?.nome ?? (carregando ? 'Carregando...' : '—')}</Text>
@@ -185,7 +337,6 @@ export default function Perfil({ navigation }) {
 
         <Text style={styles.secaoTitulo}>Resumo da Conta</Text>
 
-        {/* Resumo da conta */}
         <View style={styles.resumoWrapper}>
           <ResumoCard emoji="📱" corFundo="#DFF5E5" valor={totalDispositivos} label="Dispositivos conectados" />
           <ResumoCard emoji="🛡️" corFundo="#DCEAFB" valor={diasDeUso} label="Dias de Uso ativo" />
@@ -199,10 +350,10 @@ export default function Perfil({ navigation }) {
           emoji="☀️"
           corIcone="#FCEBCB"
           titulo="Luminosidade"
-          recomendado={`Recomendado: ${configuracaoPrincipal?.max_luminosidade ?? '—'} lx`}
-          valorAtual={Number(configuracaoPrincipal?.max_luminosidade ?? 0)}
-          min={0}
-          max={1000}
+          recomendado={`Recomendado: ${limitesLuz.texto_confortavel} - ${limitesLuz.texto_atencao}`}
+          valorAtual={valorAtualLuminosidade}
+          min={limitesLuz.confortavel_ate}
+          max={limitesLuz.desconfortavel_acima}
           corBarra="#F2A93B"
         />
 
@@ -210,10 +361,10 @@ export default function Perfil({ navigation }) {
           emoji="🔊"
           corIcone="#DCEAFB"
           titulo="Ruído"
-          recomendado={`Recomendado: ${configuracaoPrincipal?.max_ruidos ?? '—'} dB`}
-          valorAtual={Number(configuracaoPrincipal?.max_ruidos ?? 0)}
-          min={0}
-          max={120}
+          recomendado={`Recomendado: ${limitesSom.texto_confortavel} - ${limitesSom.texto_atencao}`}
+          valorAtual={valorAtualRuido}
+          min={limitesSom.confortavel_ate}
+          max={limitesSom.desconfortavel_acima}
           corBarra="#1B2A4A"
         />
 
@@ -228,7 +379,6 @@ export default function Perfil({ navigation }) {
           corBarra="#E4614B"
         />
 
-        {/* Caixa informativa */}
         <View style={styles.infoBox}>
           <Text style={styles.infoIcone}>ⓘ</Text>
           <Text style={styles.infoTexto}>
@@ -241,7 +391,6 @@ export default function Perfil({ navigation }) {
         </TouchableOpacity>
       </ScrollView>
 
-      {/* Rodapé de navegação */}
       <View style={styles.bottomBar}>
         <TouchableOpacity style={styles.bottomItem} onPress={() => navigation.navigate('TelaInicial')}>
           <Text style={styles.bottomText}>Início</Text>

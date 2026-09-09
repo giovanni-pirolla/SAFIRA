@@ -13,11 +13,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderBottomWidth: 1,
     borderBottomColor: '#EFEFEF',
-    marginBottom: 10, // Espaço abaixo do header
+    marginBottom: 10,
   },
   backButton: {
     padding: 5,
-    marginRight: 15, // Aumenta o espaço entre a seta e o título
+    marginRight: 15,
   },
   backIcon: {
     fontSize: 24,
@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    paddingHorizontal: 15, // Ajustado para corresponder à imagem
+    paddingHorizontal: 15,
   },
   sectionTitle: {
     fontSize: 16,
@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
     color: '#5A5A5A',
     marginTop: 20,
     marginBottom: 10,
-    marginLeft: 5, // Pequeno ajuste para alinhar com as opções
+    marginLeft: 5,
   },
   optionContainer: {
     flexDirection: 'row',
@@ -61,20 +61,20 @@ const styles = StyleSheet.create({
     }),
   },
   optionIcon: {
-    fontSize: 20, // Tamanho do emoji
-    marginRight: 15, // Espaço entre o ícone e o texto
-    width: 24, // Garante que o ícone tenha um espaço fixo
+    fontSize: 20,
+    marginRight: 15,
+    width: 24,
     textAlign: 'center',
   },
   optionLabel: {
     fontSize: 16,
     color: '#1B1B1B',
-    flex: 1, // Permite que o label ocupe o espaço restante
+    flex: 1,
   },
   optionValue: {
     fontSize: 16,
     color: '#5A5A5A',
-    marginRight: 10, // Espaço entre o valor e a seta
+    marginRight: 10,
   },
   optionArrow: {
     fontSize: 18,
@@ -86,10 +86,23 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     alignItems: 'center',
     marginTop: 30,
-    marginBottom: 20, // Espaço para o ScrollView
+    marginBottom: 20,
   },
   logoutButtonText: {
     fontSize: 17,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+  },
+  addCuidadorButton: { // Novo estilo para o botão de adicionar cuidador
+    backgroundColor: '#2F6FED',
+    borderRadius: 10,
+    paddingVertical: 15,
+    alignItems: 'center',
+    marginTop: 15,
+    marginBottom: 10,
+  },
+  addCuidadorButtonText: {
+    fontSize: 16,
     fontWeight: 'bold',
     color: '#FFFFFF',
   },
