@@ -6,8 +6,7 @@ import { logout } from '../services/authService';
 import { useAuth } from '../contexts/AuthContext';
 import styles from './estilos/PerfilEstilos';
 import * as ImagePicker from 'expo-image-picker';
-
-// ... (ResumoCard e LimiteSensorial componentes permanecem os mesmos) ...
+import { decode } from 'base64-arraybuffer';
 
 function ResumoCard({ emoji, corFundo, valor, label }) {
   return (
@@ -66,9 +65,8 @@ export default function Perfil({ navigation }) {
   const [carregando, setCarregando] = useState(true);
   const [uploading, setUploading] = useState(false);
 
-  const { session } = useAuth(); // <--- session obtida aqui
+  const { session } = useAuth();
 
-  // Valores padrão para os limites caso não existam no perfil do usuário
   const limitesSomPadrao = {
     confortavel_ate: 50, atencao_de: 51, atencao_ate: 70, desconfortavel_acima: 71,
     texto_confortavel: 'até 50 dB', texto_atencao: '51 - 70 dB', texto_desconfortavel: 'acima de 70 dB'
@@ -81,7 +79,6 @@ export default function Perfil({ navigation }) {
   const limitesSom = usuario?.limites_som || limitesSomPadrao;
   const limitesLuz = usuario?.limites_luz || limitesLuzPadrao;
 
-  // Valores de referência para a barra de progresso (pode ajustar a lógica)
   const valorAtualRuido = (limitesSom.atencao_de + limitesSom.atencao_ate) / 2;
   const valorAtualLuminosidade = (limitesLuz.atencao_de + limitesLuz.atencao_ate) / 2;
 
@@ -211,155 +208,115 @@ export default function Perfil({ navigation }) {
     await logout();
   };
 
-  // --- Funções para a foto de perfil ---
+  const uploadImage = async (asset, currentSession) => {
+    const userId = currentSession?.user?.id;
 
-  const uploadImage = async (uri, currentSession) => {
-    if (!currentSession?.user?.id) {
+    if (!userId) {
       Alert.alert('Erro', 'Usuário não autenticado.');
+      return;
+    }
+
+    if (!asset?.base64) {
+      Alert.alert('Erro', 'Não foi possível obter os dados da imagem.');
       return;
     }
 
     setUploading(true);
 
     try {
-      // 1. Obtém os dados da imagem
-      const response = await fetch(uri);
+      const arrayBuffer = decode(asset.base64);
+      const filePath = `${userId}.jpg`;
 
-      if (!response.ok) {
-        throw new Error(
-          `Não foi possível acessar a imagem. Status: ${response.status}`
-        );
-      }
-
-      const arrayBuffer = await response.arrayBuffer();
-
-      // 2. Descobre o tipo da imagem
-      const contentType =
-        response.headers.get('content-type') || 'image/jpeg';
-
-      let fileExt = 'jpg';
-
-      if (contentType === 'image/png') {
-        fileExt = 'png';
-      } else if (contentType === 'image/webp') {
-        fileExt = 'webp';
-      } else if (contentType === 'image/jpeg') {
-        fileExt = 'jpg';
-      }
-
-      console.log('==============================');
-      console.log('UPLOAD DA IMAGEM');
-      console.log('URI:', uri);
-      console.log('Tipo MIME:', contentType);
-      console.log('Tamanho:', arrayBuffer.byteLength);
-      console.log('Extensão:', fileExt);
-
-      // 3. Cria o caminho dentro do bucket
-      const filePath = `${currentSession.user.id}.${fileExt}`;
-
-      console.log('Caminho no Storage:', filePath);
-
-      // 4. Envia para o Storage
       const { error: uploadError } = await supabase.storage
         .from('avatars')
         .upload(filePath, arrayBuffer, {
-          contentType,
+          contentType: 'image/jpeg',
           upsert: true,
         });
 
       if (uploadError) {
-        console.error('Erro no upload:', uploadError);
         throw uploadError;
       }
 
-      console.log('Upload realizado com sucesso!');
-
-      // 5. Obtém a URL pública
-      const { data: publicUrlData } = supabase.storage
+      const { data: urlData } = supabase.storage
         .from('avatars')
         .getPublicUrl(filePath);
 
-      const publicUrl = publicUrlData?.publicUrl;
+      const publicUrl = urlData?.publicUrl;
 
       if (!publicUrl) {
-        throw new Error(
-          'Não foi possível obter a URL pública da imagem.'
-        );
+        throw new Error('Não foi possível obter a URL pública da imagem.');
       }
 
-      // Evita que o navegador reutilize uma imagem antiga do cache
       const imageUrl = `${publicUrl}?t=${Date.now()}`;
 
-      console.log('URL pública:', imageUrl);
-
-      // 6. Salva a URL no banco
       const { error: updateError } = await supabase
         .from('usuario')
-        .update({
-          avatar_url: imageUrl,
-        })
-        .eq('id', currentSession.user.id);
+        .update({ avatar_url: imageUrl })
+        .eq('id', userId);
 
       if (updateError) {
-        console.error(
-          'Erro ao salvar avatar_url:',
-          updateError
-        );
         throw updateError;
       }
 
-      // 7. Atualiza a interface imediatamente
-      setUsuario((prev) => ({
-        ...prev,
-        avatar_url: imageUrl,
-      }));
-
-      console.log('Avatar salvo no banco com sucesso.');
-      console.log('==============================');
-
-      Alert.alert(
-        'Sucesso',
-        'Foto de perfil atualizada!'
-      );
-
+      setUsuario((prev) => ({ ...prev, avatar_url: imageUrl }));
+      Alert.alert('Sucesso', 'Foto de perfil atualizada!');
     } catch (error) {
-      console.error('==============================');
-      console.error('ERRO NO UPLOAD DA IMAGEM');
-      console.error(error);
-      console.error('Mensagem:', error?.message);
-      console.error('==============================');
-
-      Alert.alert(
-        'Erro',
-        error?.message ||
-          'Não foi possível atualizar a foto de perfil.'
-      );
-
+      console.error('Erro no upload da imagem:', error);
+      Alert.alert('Erro', error?.message || 'Não foi possível atualizar a foto de perfil.');
     } finally {
       setUploading(false);
     }
   };
 
-  const pickImage = async () => {
-    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+  const selecionarOrigemFoto = () => {
+    Alert.alert('Alterar Foto de Perfil', 'Escolha uma opção:', [
+      { text: 'Tirar Foto (Câmera)', onPress: tirarFotoCamera },
+      { text: 'Escolher da Galeria', onPress: escolherFotoGaleria },
+      { text: 'Cancelar', style: 'cancel' },
+    ]);
+  };
+
+  const tirarFotoCamera = async () => {
+    const { status } = await ImagePicker.requestCameraPermissionsAsync();
+
     if (status !== 'granted') {
-      Alert.alert('Permissão necessária', 'Precisamos da permissão para acessar sua galeria para definir a foto de perfil.');
+      Alert.alert('Permissão necessária', 'Precisamos de acesso à câmera para tirar sua foto.');
       return;
     }
 
-    let result = await ImagePicker.launchImageLibraryAsync({
+    const result = await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.5,
+      base64: true,
+    });
+
+    if (!result.canceled) {
+      await uploadImage(result.assets[0], session);
+    }
+  };
+
+  const escolherFotoGaleria = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (status !== 'granted') {
+      Alert.alert('Permissão necessária', 'Precisamos de acesso à galeria para definir a foto.');
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'],
       allowsEditing: true,
       aspect: [1, 1],
       quality: 0.5,
+      base64: true,
     });
 
     if (!result.canceled) {
-      const uri = result.assets[0].uri;
-      await uploadImage(uri, session);
+      await uploadImage(result.assets[0], session);
     }
   };
-  // --- Fim das funções para a foto de perfil ---
 
   return (
     <SafeAreaView style={styles.container}>
@@ -375,14 +332,18 @@ export default function Perfil({ navigation }) {
         <Text style={styles.secaoTitulo}>Definições do Perfil</Text>
 
         <View style={styles.userCard}>
-          <Pressable onPress={pickImage} style={styles.avatarCircle}>
+          <Pressable onPress={selecionarOrigemFoto} style={styles.avatarCircle}>
             {uploading ? (
               <ActivityIndicator size="small" color="#FFFFFF" />
             ) : usuario?.avatar_url ? (
-                <Image source={{ uri: usuario.avatar_url }} style={styles.avatarImage} />
-              ) : (
-                <Text style={styles.avatarIcone}>👤</Text>
-              )}
+              <Image
+                source={{ uri: usuario.avatar_url }}
+                style={styles.avatarImage}
+                key={usuario.avatar_url}
+              />
+            ) : (
+              <Text style={styles.avatarIcone}>👤</Text>
+            )}
           </Pressable>
 
           <View style={styles.userInfo}>
