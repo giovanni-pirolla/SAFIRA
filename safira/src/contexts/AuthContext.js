@@ -7,6 +7,7 @@ export function AuthProvider({ children }) {
     const [session, setSession] = useState(null);
     const [carregando, setCarregando] = useState(true);
     const [perfilUsuario, setPerfilUsuario] = useState(null); // Novo estado para o perfil
+    const [formularioPreenchido, setFormularioPreenchido] = useState(null);
 
     useEffect(() => {
         async function getSessionAndProfile() {
@@ -25,11 +26,14 @@ export function AuthProvider({ children }) {
                 if (error) {
                     console.error('Erro ao buscar perfil do usuário:', error.message);
                     setPerfilUsuario(null);
+                    setFormularioPreenchido(false);
                 } else {
                     setPerfilUsuario(perfil);
+                    setFormularioPreenchido(perfil?.formulario_preenchido ?? false);
                 }
             } else {
                 setPerfilUsuario(null);
+                setFormularioPreenchido(false);
             }
             setCarregando(false);
         }
@@ -48,9 +52,11 @@ export function AuthProvider({ children }) {
                     .then(({ data: perfil, error }) => {
                         if (error) console.error('Erro ao buscar perfil após mudança de sessão:', error.message);
                         setPerfilUsuario(perfil);
+                        setFormularioPreenchido(perfil?.formulario_preenchido ?? false);
                     });
             } else {
                 setPerfilUsuario(null);
+                setFormularioPreenchido(false);
             }
         });
 
@@ -60,7 +66,15 @@ export function AuthProvider({ children }) {
     }, []);
 
     return (
-        <AuthContext.Provider value={{ session, carregando, perfilUsuario }}>
+        <AuthContext.Provider
+            value={{
+                session,
+                carregando,
+                perfilUsuario,
+                formularioPreenchido,
+                setFormularioPreenchido
+            }}
+        >
             {children}
         </AuthContext.Provider>
     );
