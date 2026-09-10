@@ -349,3 +349,158 @@
 {"_e":"metro:client_log","_t":1788994341005,"level":"log","data":["Status da permissão de contatos:","undetermined"]}
 {"_e":"metro:client_log","_t":1788994341157,"level":"log","data":["Botão \"Adicionar Cuidador\" pressionado."]}
 {"_e":"metro:client_log","_t":1788994341157,"level":"log","data":["Status da permissão de contatos:","undetermined"]}
+{"_e":"root:init","_t":1789047012928,"format":"v0-jsonl","version":"57.0.20"}
+{"_e":"env:mode","_t":1789047012952,"nodeEnv":"development","babelEnv":"development","mode":"development"}
+{"_e":"env:load","_t":1789047012982,"mode":"development","files":[],"env":{}}
+{"_e":"devserver:start","_t":1789047021509,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../..\\..\\app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
+{"_e":"metro:config","_t":1789047035937,"serverRoot":"../..\\..","projectRoot":"../..\\..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
+{"_e":"expo:dev-tools-plugin:load","_t":1789047042570,"plugins":[]}
+{"_e":"metro:instantiate","_t":1789047056200,"atlas":false,"workers":6,"host":"::","port":8081}
+{"_e":"metro:bundling:started","_t":1789047066876,"id":"1","platform":"web","environment":null,"entry":"index.js"}
+{"_e":"metro:bundling:progress","_t":1789047066878,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1789047066887,"id":"1","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:progress","_t":1789047074440,"id":"1","progress":0.010000000000000002,"total":1,"current":1}
+{"_e":"metro:bundling:progress","_t":1789047074540,"id":"1","progress":0.010000000000000002,"total":3,"current":1}
+{"_e":"metro:bundling:progress","_t":1789047074596,"id":"1","progress":0.04000000000000001,"total":3,"current":2}
+{"_e":"metro:bundling:progress","_t":1789047074699,"id":"1","progress":0.1111111111111111,"total":12,"current":4}
+{"_e":"metro:bundling:progress","_t":1789047074806,"id":"1","progress":0.30250000000000005,"total":20,"current":11}
+{"_e":"metro:bundling:progress","_t":1789047074908,"id":"1","progress":0.30250000000000005,"total":27,"current":14}
+{"_e":"metro:bundling:progress","_t":1789047075099,"id":"1","progress":0.308641975308642,"total":27,"current":15}
+{"_e":"metro:bundling:progress","_t":1789047075204,"id":"1","progress":0.34363852556480373,"total":29,"current":17}
+{"_e":"metro:bundling:progress","_t":1789047075306,"id":"1","progress":0.4702040816326531,"total":35,"current":24}
+{"_e":"metro:bundling:progress","_t":1789047075408,"id":"1","progress":0.4702040816326531,"total":40,"current":27}
+{"_e":"metro:bundling:progress","_t":1789047075508,"id":"1","progress":0.4702040816326531,"total":49,"current":33}
+{"_e":"metro:bundling:progress","_t":1789047075617,"id":"1","progress":0.5476,"total":50,"current":37}
+{"_e":"metro:bundling:progress","_t":1789047075722,"id":"1","progress":0.6782006920415224,"total":51,"current":42}
+{"_e":"metro:bundling:progress","_t":1789047075822,"id":"1","progress":0.6892132431470275,"total":53,"current":44}
+{"_e":"metro:bundling:progress","_t":1789047075923,"id":"1","progress":0.7302479338842974,"total":55,"current":47}
+{"_e":"metro:bundling:progress","_t":1789047076024,"id":"1","progress":0.7836603063692555,"total":61,"current":54}
+{"_e":"metro:bundling:progress","_t":1789047076123,"id":"1","progress":0.7836603063692555,"total":98,"current":70}
+{"_e":"metro:bundling:progress","_t":1789047076225,"id":"1","progress":0.7836603063692555,"total":101,"current":82}
+{"_e":"metro:bundling:progress","_t":1789047076325,"id":"1","progress":0.7836603063692555,"total":125,"current":93}
+{"_e":"metro:bundling:progress","_t":1789047076432,"id":"1","progress":0.7836603063692555,"total":127,"current":100}
+{"_e":"metro:bundling:progress","_t":1789047076532,"id":"1","progress":0.7836603063692555,"total":153,"current":105}
+{"_e":"metro:bundling:progress","_t":1789047076632,"id":"1","progress":0.7836603063692555,"total":154,"current":106}
+{"_e":"metro:bundling:progress","_t":1789047076733,"id":"1","progress":0.7836603063692555,"total":173,"current":110}
+{"_e":"metro:bundling:progress","_t":1789047076834,"id":"1","progress":0.7836603063692555,"total":184,"current":113}
+{"_e":"metro:bundling:progress","_t":1789047076935,"id":"1","progress":0.7836603063692555,"total":194,"current":121}
+{"_e":"metro:bundling:progress","_t":1789047077045,"id":"1","progress":0.7836603063692555,"total":207,"current":128}
+{"_e":"metro:bundling:progress","_t":1789047077145,"id":"1","progress":0.7836603063692555,"total":217,"current":142}
+{"_e":"metro:bundling:progress","_t":1789047077256,"id":"1","progress":0.7836603063692555,"total":263,"current":152}
+{"_e":"metro:bundling:progress","_t":1789047077358,"id":"1","progress":0.7836603063692555,"total":274,"current":158}
+{"_e":"metro:bundling:progress","_t":1789047077460,"id":"1","progress":0.7836603063692555,"total":285,"current":168}
+{"_e":"metro:bundling:progress","_t":1789047077563,"id":"1","progress":0.7836603063692555,"total":298,"current":173}
+{"_e":"metro:bundling:progress","_t":1789047077687,"id":"1","progress":0.7836603063692555,"total":298,"current":174}
+{"_e":"metro:bundling:progress","_t":1789047077791,"id":"1","progress":0.7836603063692555,"total":300,"current":189}
+{"_e":"metro:bundling:progress","_t":1789047077895,"id":"1","progress":0.7836603063692555,"total":316,"current":203}
+{"_e":"metro:bundling:progress","_t":1789047077996,"id":"1","progress":0.7836603063692555,"total":357,"current":211}
+{"_e":"metro:bundling:progress","_t":1789047078098,"id":"1","progress":0.7836603063692555,"total":365,"current":223}
+{"_e":"metro:bundling:progress","_t":1789047078213,"id":"1","progress":0.7836603063692555,"total":373,"current":233}
+{"_e":"metro:bundling:progress","_t":1789047078313,"id":"1","progress":0.7836603063692555,"total":393,"current":243}
+{"_e":"metro:bundling:progress","_t":1789047078414,"id":"1","progress":0.7836603063692555,"total":395,"current":252}
+{"_e":"metro:bundling:progress","_t":1789047078520,"id":"1","progress":0.7836603063692555,"total":408,"current":266}
+{"_e":"metro:bundling:progress","_t":1789047078623,"id":"1","progress":0.7836603063692555,"total":412,"current":280}
+{"_e":"metro:bundling:progress","_t":1789047078728,"id":"1","progress":0.7836603063692555,"total":430,"current":292}
+{"_e":"metro:bundling:progress","_t":1789047078829,"id":"1","progress":0.7836603063692555,"total":435,"current":297}
+{"_e":"metro:bundling:progress","_t":1789047078934,"id":"1","progress":0.7836603063692555,"total":447,"current":309}
+{"_e":"metro:bundling:progress","_t":1789047079035,"id":"1","progress":0.7836603063692555,"total":468,"current":320}
+{"_e":"metro:bundling:progress","_t":1789047079134,"id":"1","progress":0.7836603063692555,"total":471,"current":330}
+{"_e":"metro:bundling:progress","_t":1789047079235,"id":"1","progress":0.7836603063692555,"total":475,"current":344}
+{"_e":"metro:bundling:progress","_t":1789047079337,"id":"1","progress":0.7836603063692555,"total":479,"current":361}
+{"_e":"metro:bundling:progress","_t":1789047079447,"id":"1","progress":0.7836603063692555,"total":485,"current":378}
+{"_e":"metro:bundling:progress","_t":1789047079547,"id":"1","progress":0.7836603063692555,"total":486,"current":400}
+{"_e":"metro:bundling:progress","_t":1789047079654,"id":"1","progress":0.7836603063692555,"total":496,"current":409}
+{"_e":"metro:bundling:progress","_t":1789047079756,"id":"1","progress":0.7836603063692555,"total":505,"current":422}
+{"_e":"metro:bundling:progress","_t":1789047079859,"id":"1","progress":0.7836603063692555,"total":515,"current":434}
+{"_e":"metro:bundling:progress","_t":1789047079961,"id":"1","progress":0.7836603063692555,"total":516,"current":443}
+{"_e":"metro:bundling:progress","_t":1789047080064,"id":"1","progress":0.7836603063692555,"total":524,"current":456}
+{"_e":"metro:bundling:progress","_t":1789047080169,"id":"1","progress":0.7836603063692555,"total":530,"current":466}
+{"_e":"metro:bundling:progress","_t":1789047080269,"id":"1","progress":0.7836603063692555,"total":555,"current":477}
+{"_e":"metro:bundling:progress","_t":1789047080376,"id":"1","progress":0.7836603063692555,"total":557,"current":487}
+{"_e":"metro:bundling:progress","_t":1789047080482,"id":"1","progress":0.8193650173930576,"total":559,"current":506}
+{"_e":"metro:bundling:progress","_t":1789047080584,"id":"1","progress":0.8437966951209962,"total":565,"current":519}
+{"_e":"metro:bundling:progress","_t":1789047080685,"id":"1","progress":0.8437966951209962,"total":572,"current":525}
+{"_e":"metro:bundling:progress","_t":1789047080785,"id":"1","progress":0.8815669648431909,"total":573,"current":538}
+{"_e":"metro:bundling:progress","_t":1789047080891,"id":"1","progress":0.8926991676575505,"total":580,"current":548}
+{"_e":"metro:bundling:progress","_t":1789047080996,"id":"1","progress":0.8948137326515705,"total":592,"current":560}
+{"_e":"metro:bundling:progress","_t":1789047081100,"id":"1","progress":0.8990084003534636,"total":598,"current":567}
+{"_e":"metro:bundling:progress","_t":1789047081201,"id":"1","progress":0.9134345606019887,"total":610,"current":583}
+{"_e":"metro:bundling:progress","_t":1789047081304,"id":"1","progress":0.9237172600206468,"total":617,"current":593}
+{"_e":"metro:bundling:progress","_t":1789047081405,"id":"1","progress":0.9489718421238069,"total":619,"current":603}
+{"_e":"metro:bundling:progress","_t":1789047081512,"id":"1","progress":0.9489718421238069,"total":637,"current":616}
+{"_e":"metro:bundling:progress","_t":1789047081612,"id":"1","progress":0.9843874372303731,"total":638,"current":633}
+{"_e":"metro:bundling:progress","_t":1789047081718,"id":"1","progress":0.9843874372303731,"total":655,"current":639}
+{"_e":"metro:bundling:progress","_t":1789047081819,"id":"1","progress":0.9908884301828568,"total":657,"current":654}
+{"_e":"metro:bundling:progress","_t":1789047081929,"id":"1","progress":0.9909434428649572,"total":661,"current":658}
+{"_e":"metro:bundling:progress","_t":1789047082041,"id":"1","progress":0.9969765701351044,"total":661,"current":660}
+{"_e":"metro:bundling:progress","_t":1789047083512,"id":"1","progress":0.999,"total":661,"current":661}
+{"_e":"metro:bundling:progress","_t":1789047083613,"id":"1","progress":0.999,"total":663,"current":662}
+{"_e":"metro:bundling:progress","_t":1789047083737,"id":"1","progress":0.999,"total":663,"current":663}
+{"_e":"metro:bundling:done","_t":1789047084581,"id":"1","total":663,"ms":17716.061}
+{"_e":"metro:bundling:started","_t":1789047108625,"id":"2","platform":"web","environment":null,"entry":"index.js"}
+{"_e":"metro:bundling:progress","_t":1789047108625,"id":"2","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1789047108647,"id":"2","total":1,"ms":21.8442}
+{"_e":"metro:client_log","_t":1789047108955,"level":"warn","data":["\"shadow*\" style props are deprecated. Use \"boxShadow\"."]}
+{"_e":"metro:client_log","_t":1789047108955,"level":"log","data":["Running application \"main\" with appParams:\n","{\"hydrate\": undefined, \"rootTag\": \"#root\"}","\nDevelopment-level warnings: ON.\nPerformance optimizations: OFF."]}
+{"_e":"metro:bundling:started","_t":1789047120302,"id":"5","platform":"web","environment":null,"entry":"index.js"}
+{"_e":"metro:bundling:progress","_t":1789047120302,"id":"5","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1789047120327,"id":"5","total":1,"ms":24.0839}
+{"_e":"metro:client_log","_t":1789047120567,"level":"warn","data":["\"shadow*\" style props are deprecated. Use \"boxShadow\"."]}
+{"_e":"metro:client_log","_t":1789047120568,"level":"log","data":["Running application \"main\" with appParams:\n","{\"hydrate\": undefined, \"rootTag\": \"#root\"}","\nDevelopment-level warnings: ON.\nPerformance optimizations: OFF."]}
+{"_e":"metro:client_log","_t":1789047266201,"level":"warn","data":["props.pointerEvents is deprecated. Use style.pointerEvents"]}
+{"_e":"metro:client_log","_t":1789047266876,"level":"warn","data":["Image: style.tintColor is deprecated. Please use props.tintColor."]}
+{"_e":"metro:bundling:started","_t":1789047308072,"id":"e","platform":"web","environment":null,"entry":"index.js"}
+{"_e":"metro:bundling:progress","_t":1789047308072,"id":"e","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1789047308113,"id":"e","total":1,"ms":40.6667}
+{"_e":"metro:client_log","_t":1789047308381,"level":"warn","data":["\"shadow*\" style props are deprecated. Use \"boxShadow\"."]}
+{"_e":"metro:client_log","_t":1789047308382,"level":"log","data":["Running application \"main\" with appParams:\n","{\"hydrate\": undefined, \"rootTag\": \"#root\"}","\nDevelopment-level warnings: ON.\nPerformance optimizations: OFF."]}
+{"_e":"metro:bundling:started","_t":1789047326809,"id":"h","platform":"web","environment":null,"entry":"index.js"}
+{"_e":"metro:bundling:progress","_t":1789047326809,"id":"h","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1789047326837,"id":"h","total":1,"ms":28.1093}
+{"_e":"metro:client_log","_t":1789047326996,"level":"warn","data":["\"shadow*\" style props are deprecated. Use \"boxShadow\"."]}
+{"_e":"metro:client_log","_t":1789047326997,"level":"log","data":["Running application \"main\" with appParams:\n","{\"hydrate\": undefined, \"rootTag\": \"#root\"}","\nDevelopment-level warnings: ON.\nPerformance optimizations: OFF."]}
+{"_e":"metro:bundling:started","_t":1789047375491,"id":"k","platform":"web","environment":null,"entry":"index.js"}
+{"_e":"metro:bundling:progress","_t":1789047375491,"id":"k","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1789047375515,"id":"k","total":1,"ms":24.5044}
+{"_e":"metro:client_log","_t":1789047375773,"level":"warn","data":["\"shadow*\" style props are deprecated. Use \"boxShadow\"."]}
+{"_e":"metro:client_log","_t":1789047375773,"level":"log","data":["Running application \"main\" with appParams:\n","{\"hydrate\": undefined, \"rootTag\": \"#root\"}","\nDevelopment-level warnings: ON.\nPerformance optimizations: OFF."]}
+{"_e":"metro:client_log","_t":1789047375956,"level":"warn","data":["Image: style.tintColor is deprecated. Please use props.tintColor."]}
+{"_e":"metro:client_log","_t":1789047383467,"level":"error","data":["Erro ao fazer upload da imagem:","Failed to fetch","\n\n\u001b[1mCode: Perfil.js\u001b[22m\n\u001b[0m \u001b[90m 268 |\u001b[39m\n \u001b[90m 269 |\u001b[39m     } \u001b[36mcatch\u001b[39m (error) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 270 |\u001b[39m       console\u001b[33m.\u001b[39merror(\u001b[32m'Erro ao fazer upload da imagem:'\u001b[39m\u001b[33m,\u001b[39m error\u001b[33m.\u001b[39mmessage)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m               \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 271 |\u001b[39m       \u001b[33mAlert\u001b[39m\u001b[33m.\u001b[39malert(\u001b[32m'Erro'\u001b[39m\u001b[33m,\u001b[39m \u001b[32m'Não foi possível atualizar a foto de perfil.'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 272 |\u001b[39m     } \u001b[36mfinally\u001b[39m {\n \u001b[90m 273 |\u001b[39m       setUploading(\u001b[36mfalse\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m\n\u001b[1mCall Stack\u001b[22m\n\u001b[90m  uploadImage (src\\screens\\Perfil.js:270:15)\u001b[39m\n\u001b[90m  pickImage (src\\screens\\Perfil.js:293:7)\u001b[39m"]}
+{"_e":"metro:client_log","_t":1789047409329,"level":"log","data":["Botão \"Adicionar Cuidador\" pressionado."]}
+{"_e":"metro:client_log","_t":1789047409330,"level":"log","data":["Status da permissão de contatos:","undetermined"]}
+{"_e":"metro:bundling:started","_t":1789047603878,"id":"t","platform":"web","environment":null,"entry":"index.js"}
+{"_e":"metro:bundling:progress","_t":1789047603878,"id":"t","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1789047603906,"id":"t","total":1,"ms":28.5365}
+{"_e":"metro:client_log","_t":1789047604193,"level":"warn","data":["\"shadow*\" style props are deprecated. Use \"boxShadow\"."]}
+{"_e":"metro:client_log","_t":1789047604193,"level":"log","data":["Running application \"main\" with appParams:\n","{\"hydrate\": undefined, \"rootTag\": \"#root\"}","\nDevelopment-level warnings: ON.\nPerformance optimizations: OFF."]}
+{"_e":"metro:client_log","_t":1789047610189,"level":"error","data":["Erro ao fazer upload da imagem:","Failed to fetch","\n\n\u001b[1mCode: Perfil.js\u001b[22m\n\u001b[0m \u001b[90m 268 |\u001b[39m\n \u001b[90m 269 |\u001b[39m     } \u001b[36mcatch\u001b[39m (error) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 270 |\u001b[39m       console\u001b[33m.\u001b[39merror(\u001b[32m'Erro ao fazer upload da imagem:'\u001b[39m\u001b[33m,\u001b[39m error\u001b[33m.\u001b[39mmessage)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m               \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 271 |\u001b[39m       \u001b[33mAlert\u001b[39m\u001b[33m.\u001b[39malert(\u001b[32m'Erro'\u001b[39m\u001b[33m,\u001b[39m \u001b[32m'Não foi possível atualizar a foto de perfil.'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 272 |\u001b[39m     } \u001b[36mfinally\u001b[39m {\n \u001b[90m 273 |\u001b[39m       setUploading(\u001b[36mfalse\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m\n\u001b[1mCall Stack\u001b[22m\n\u001b[90m  uploadImage (src\\screens\\Perfil.js:270:15)\u001b[39m\n\u001b[90m  pickImage (src\\screens\\Perfil.js:293:7)\u001b[39m"]}
+{"_e":"metro:bundling:started","_t":1789048020000,"id":"x","platform":"web","environment":null,"entry":"index.js"}
+{"_e":"metro:bundling:progress","_t":1789048020000,"id":"x","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1789048020025,"id":"x","total":1,"ms":24.512}
+{"_e":"metro:client_log","_t":1789048020280,"level":"warn","data":["\"shadow*\" style props are deprecated. Use \"boxShadow\"."]}
+{"_e":"metro:client_log","_t":1789048020280,"level":"log","data":["Running application \"main\" with appParams:\n","{\"hydrate\": undefined, \"rootTag\": \"#root\"}","\nDevelopment-level warnings: ON.\nPerformance optimizations: OFF."]}
+{"_e":"metro:client_log","_t":1789048071809,"level":"error","data":["Erro ao fazer upload da imagem:","Failed to fetch","\n\n\u001b[1mCode: Perfil.js\u001b[22m\n\u001b[0m \u001b[90m 268 |\u001b[39m\n \u001b[90m 269 |\u001b[39m     } \u001b[36mcatch\u001b[39m (error) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 270 |\u001b[39m       console\u001b[33m.\u001b[39merror(\u001b[32m'Erro ao fazer upload da imagem:'\u001b[39m\u001b[33m,\u001b[39m error\u001b[33m.\u001b[39mmessage)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m               \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 271 |\u001b[39m       \u001b[33mAlert\u001b[39m\u001b[33m.\u001b[39malert(\u001b[32m'Erro'\u001b[39m\u001b[33m,\u001b[39m \u001b[32m'Não foi possível atualizar a foto de perfil.'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 272 |\u001b[39m     } \u001b[36mfinally\u001b[39m {\n \u001b[90m 273 |\u001b[39m       setUploading(\u001b[36mfalse\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m\n\u001b[1mCall Stack\u001b[22m\n\u001b[90m  uploadImage (src\\screens\\Perfil.js:270:15)\u001b[39m\n\u001b[90m  pickImage (src\\screens\\Perfil.js:293:7)\u001b[39m"]}
+{"_e":"metro:bundling:started","_t":1789048331588,"id":"11","platform":"web","environment":null,"entry":"index.js"}
+{"_e":"metro:bundling:progress","_t":1789048331588,"id":"11","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1789048331615,"id":"11","total":1,"ms":26.7541}
+{"_e":"metro:client_log","_t":1789048331853,"level":"warn","data":["\"shadow*\" style props are deprecated. Use \"boxShadow\"."]}
+{"_e":"metro:client_log","_t":1789048331853,"level":"log","data":["Running application \"main\" with appParams:\n","{\"hydrate\": undefined, \"rootTag\": \"#root\"}","\nDevelopment-level warnings: ON.\nPerformance optimizations: OFF."]}
+{"_e":"metro:client_log","_t":1789048337145,"level":"error","data":["Erro ao fazer upload da imagem:","Failed to fetch","\n\n\u001b[1mCode: Perfil.js\u001b[22m\n\u001b[0m \u001b[90m 268 |\u001b[39m\n \u001b[90m 269 |\u001b[39m     } \u001b[36mcatch\u001b[39m (error) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 270 |\u001b[39m       console\u001b[33m.\u001b[39merror(\u001b[32m'Erro ao fazer upload da imagem:'\u001b[39m\u001b[33m,\u001b[39m error\u001b[33m.\u001b[39mmessage)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m               \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 271 |\u001b[39m       \u001b[33mAlert\u001b[39m\u001b[33m.\u001b[39malert(\u001b[32m'Erro'\u001b[39m\u001b[33m,\u001b[39m \u001b[32m'Não foi possível atualizar a foto de perfil.'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 272 |\u001b[39m     } \u001b[36mfinally\u001b[39m {\n \u001b[90m 273 |\u001b[39m       setUploading(\u001b[36mfalse\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m\n\u001b[1mCall Stack\u001b[22m\n\u001b[90m  uploadImage (src\\screens\\Perfil.js:270:15)\u001b[39m\n\u001b[90m  pickImage (src\\screens\\Perfil.js:293:7)\u001b[39m"]}
+{"_e":"metro:bundling:started","_t":1789048528325,"id":"15","platform":"web","environment":null,"entry":"index.js"}
+{"_e":"metro:bundling:progress","_t":1789048528325,"id":"15","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1789048528351,"id":"15","total":1,"ms":26.236}
+{"_e":"metro:client_log","_t":1789048528612,"level":"warn","data":["\"shadow*\" style props are deprecated. Use \"boxShadow\"."]}
+{"_e":"metro:client_log","_t":1789048528612,"level":"log","data":["Running application \"main\" with appParams:\n","{\"hydrate\": undefined, \"rootTag\": \"#root\"}","\nDevelopment-level warnings: ON.\nPerformance optimizations: OFF."]}
+{"_e":"metro:client_log","_t":1789048534711,"level":"error","data":["Erro ao fazer upload da imagem:","Failed to fetch","\n\n\u001b[1mCode: Perfil.js\u001b[22m\n\u001b[0m \u001b[90m 268 |\u001b[39m\n \u001b[90m 269 |\u001b[39m     } \u001b[36mcatch\u001b[39m (error) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 270 |\u001b[39m       console\u001b[33m.\u001b[39merror(\u001b[32m'Erro ao fazer upload da imagem:'\u001b[39m\u001b[33m,\u001b[39m error\u001b[33m.\u001b[39mmessage)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m               \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 271 |\u001b[39m       \u001b[33mAlert\u001b[39m\u001b[33m.\u001b[39malert(\u001b[32m'Erro'\u001b[39m\u001b[33m,\u001b[39m \u001b[32m'Não foi possível atualizar a foto de perfil.'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 272 |\u001b[39m     } \u001b[36mfinally\u001b[39m {\n \u001b[90m 273 |\u001b[39m       setUploading(\u001b[36mfalse\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m\n\u001b[1mCall Stack\u001b[22m\n\u001b[90m  uploadImage (src\\screens\\Perfil.js:270:15)\u001b[39m\n\u001b[90m  pickImage (src\\screens\\Perfil.js:293:7)\u001b[39m"]}
+{"_e":"metro:bundling:started","_t":1789048883611,"id":"19","platform":"web","environment":null,"entry":"index.js"}
+{"_e":"metro:bundling:progress","_t":1789048883611,"id":"19","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1789048883640,"id":"19","total":1,"ms":28.9715}
+{"_e":"metro:client_log","_t":1789048883799,"level":"warn","data":["\"shadow*\" style props are deprecated. Use \"boxShadow\"."]}
+{"_e":"metro:client_log","_t":1789048883800,"level":"log","data":["Running application \"main\" with appParams:\n","{\"hydrate\": undefined, \"rootTag\": \"#root\"}","\nDevelopment-level warnings: ON.\nPerformance optimizations: OFF."]}
+{"_e":"metro:client_log","_t":1789048888620,"level":"error","data":["Erro ao fazer upload da imagem:","Failed to fetch","\n\n\u001b[1mCode: Perfil.js\u001b[22m\n\u001b[0m \u001b[90m 268 |\u001b[39m\n \u001b[90m 269 |\u001b[39m     } \u001b[36mcatch\u001b[39m (error) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 270 |\u001b[39m       console\u001b[33m.\u001b[39merror(\u001b[32m'Erro ao fazer upload da imagem:'\u001b[39m\u001b[33m,\u001b[39m error\u001b[33m.\u001b[39mmessage)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m               \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 271 |\u001b[39m       \u001b[33mAlert\u001b[39m\u001b[33m.\u001b[39malert(\u001b[32m'Erro'\u001b[39m\u001b[33m,\u001b[39m \u001b[32m'Não foi possível atualizar a foto de perfil.'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 272 |\u001b[39m     } \u001b[36mfinally\u001b[39m {\n \u001b[90m 273 |\u001b[39m       setUploading(\u001b[36mfalse\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m\n\u001b[1mCall Stack\u001b[22m\n\u001b[90m  uploadImage (src\\screens\\Perfil.js:270:15)\u001b[39m\n\u001b[90m  pickImage (src\\screens\\Perfil.js:293:7)\u001b[39m"]}
+{"_e":"metro:bundling:started","_t":1789049158917,"id":"1d","platform":"web","environment":null,"entry":"index.js"}
+{"_e":"metro:bundling:progress","_t":1789049158917,"id":"1d","progress":0,"total":1,"current":0}
+{"_e":"metro:bundling:done","_t":1789049158942,"id":"1d","total":1,"ms":24.7938}
+{"_e":"metro:client_log","_t":1789049159191,"level":"warn","data":["\"shadow*\" style props are deprecated. Use \"boxShadow\"."]}
+{"_e":"metro:client_log","_t":1789049159191,"level":"log","data":["Running application \"main\" with appParams:\n","{\"hydrate\": undefined, \"rootTag\": \"#root\"}","\nDevelopment-level warnings: ON.\nPerformance optimizations: OFF."]}
+{"_e":"metro:client_log","_t":1789049166096,"level":"error","data":["Erro ao fazer upload da imagem:","Failed to fetch","\n\n\u001b[1mCode: Perfil.js\u001b[22m\n\u001b[0m \u001b[90m 268 |\u001b[39m\n \u001b[90m 269 |\u001b[39m     } \u001b[36mcatch\u001b[39m (error) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 270 |\u001b[39m       console\u001b[33m.\u001b[39merror(\u001b[32m'Erro ao fazer upload da imagem:'\u001b[39m\u001b[33m,\u001b[39m error\u001b[33m.\u001b[39mmessage)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m               \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 271 |\u001b[39m       \u001b[33mAlert\u001b[39m\u001b[33m.\u001b[39malert(\u001b[32m'Erro'\u001b[39m\u001b[33m,\u001b[39m \u001b[32m'Não foi possível atualizar a foto de perfil.'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 272 |\u001b[39m     } \u001b[36mfinally\u001b[39m {\n \u001b[90m 273 |\u001b[39m       setUploading(\u001b[36mfalse\u001b[39m)\u001b[33m;\u001b[39m\u001b[0m\n\u001b[1mCall Stack\u001b[22m\n\u001b[90m  uploadImage (src\\screens\\Perfil.js:270:15)\u001b[39m\n\u001b[90m  pickImage (src\\screens\\Perfil.js:293:7)\u001b[39m"]}
