@@ -54,17 +54,19 @@ export default function AppNavigator() {
 
   return (
     <NavigationContainer>
-      {/* CORREÇÃO: Removido QUALQUER espaço ou quebra de linha entre <Stack.Navigator> e {session ? ( */}
-      <Stack.Navigator screenOptions={{ headerShown: false }}>{session ? (
+      <Stack.Navigator
+        initialRouteName={formularioPreenchido ? 'TelaInicial' : 'Formulario1'}
+        screenOptions={{ headerShown: false }}
+      >
+        {session ? (
           <>
-            {formularioPreenchido ? (
-              <Stack.Screen name="TelaInicial" component={TelaInicial} />
-            ) : (
-              <Stack.Screen name="Formulario1" component={Formulario1} />
-            )}
+            <Stack.Screen name="TelaInicial" component={TelaInicial} />
+
+            <Stack.Screen name="Formulario1" component={Formulario1} />
             <Stack.Screen name="Formulario2" component={Formulario2} />
             <Stack.Screen name="Formulario3" component={Formulario3} />
             <Stack.Screen name="Formulario4" component={Formulario4} />
+
             <Stack.Screen name="Historico" component={Historico} />
             <Stack.Screen name="Dispositivos" component={Dispositivos} />
             <Stack.Screen name="AddDispositivo" component={AddDispositivo} />
@@ -77,7 +79,8 @@ export default function AppNavigator() {
             <Stack.Screen name="LoginScreen" component={LoginScreen} />
             <Stack.Screen name="RegisterScreen" component={RegisterScreen} />
           </>
-        )}</Stack.Navigator>{/* CORREÇÃO: Removido QUALQUER espaço ou quebra de linha antes de </Stack.Navigator> */}
+        )}
+      </Stack.Navigator>
     </NavigationContainer>
   );
 }

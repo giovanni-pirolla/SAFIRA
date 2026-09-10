@@ -212,8 +212,6 @@ export default function Perfil({ navigation }) {
   };
 
   // --- Funções para a foto de perfil ---
-  // Adicione a URL da sua Edge Function aqui.
-  const EDGE_FUNCTION_URL = 'https://nvsxblxkbwyrrvsueclr.supabase.co/functions/v1/upload-avatar';
 
   const uploadImage = async (uri, currentSession) => {
     if (!currentSession?.user?.id) {
@@ -224,51 +222,119 @@ export default function Perfil({ navigation }) {
     setUploading(true);
 
     try {
-      // 1. Preparar o arquivo para envio
+      // 1. Obtém os dados da imagem
       const response = await fetch(uri);
-      const blob = await response.blob();
 
-      // Extrair o nome do arquivo e extensão para o FormData
-      const fileExt = uri.split('.').pop();
-      const cleanFileExt = fileExt ? fileExt.split('?')[0].split('#')[0] : 'png';
-      const fileName = `${currentSession.user.id}.${cleanFileExt}`;
-
-      // Criar um FormData para enviar a imagem para a Edge Function
-      const formData = new FormData();
-      formData.append('image', {
-        uri: uri,
-        name: fileName, // Nome do arquivo que a Edge Function vai receber
-        type: blob.type, // Tipo MIME do arquivo
-      });
-
-      // 2. Fazer a requisição para a Edge Function
-      const res = await fetch(EDGE_FUNCTION_URL, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${currentSession.access_token}`, // Envia o token do usuário para a Edge Function
-          // 'Content-Type': 'multipart/form-data' // Não defina Content-Type aqui, o fetch faz isso automaticamente com FormData
-        },
-        body: formData, // Envia a imagem no corpo da requisição
-      });
-
-      // 3. Processar a resposta da Edge Function
-      const data = await res.json();
-
-      if (!res.ok) {
-        // Se a resposta não for OK (status 2xx), significa que houve um erro na Edge Function
-        console.error('Erro da Edge Function:', data.error);
-        throw new Error(data.error || 'Erro desconhecido ao fazer upload pela Edge Function.');
+      if (!response.ok) {
+        throw new Error(
+          `Não foi possível acessar a imagem. Status: ${response.status}`
+        );
       }
 
-      const publicUrl = data.publicUrl; // A Edge Function retorna a URL pública
+      const arrayBuffer = await response.arrayBuffer();
 
-      // 4. Atualizar o estado local e exibir mensagem de sucesso
-      setUsuario(prev => ({ ...prev, avatar_url: publicUrl }));
-      Alert.alert('Sucesso', 'Foto de perfil atualizada!');
+      // 2. Descobre o tipo da imagem
+      const contentType =
+        response.headers.get('content-type') || 'image/jpeg';
+
+      let fileExt = 'jpg';
+
+      if (contentType === 'image/png') {
+        fileExt = 'png';
+      } else if (contentType === 'image/webp') {
+        fileExt = 'webp';
+      } else if (contentType === 'image/jpeg') {
+        fileExt = 'jpg';
+      }
+
+      console.log('==============================');
+      console.log('UPLOAD DA IMAGEM');
+      console.log('URI:', uri);
+      console.log('Tipo MIME:', contentType);
+      console.log('Tamanho:', arrayBuffer.byteLength);
+      console.log('Extensão:', fileExt);
+
+      // 3. Cria o caminho dentro do bucket
+      const filePath = `${currentSession.user.id}.${fileExt}`;
+
+      console.log('Caminho no Storage:', filePath);
+
+      // 4. Envia para o Storage
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, arrayBuffer, {
+          contentType,
+          upsert: true,
+        });
+
+      if (uploadError) {
+        console.error('Erro no upload:', uploadError);
+        throw uploadError;
+      }
+
+      console.log('Upload realizado com sucesso!');
+
+      // 5. Obtém a URL pública
+      const { data: publicUrlData } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+
+      const publicUrl = publicUrlData?.publicUrl;
+
+      if (!publicUrl) {
+        throw new Error(
+          'Não foi possível obter a URL pública da imagem.'
+        );
+      }
+
+      // Evita que o navegador reutilize uma imagem antiga do cache
+      const imageUrl = `${publicUrl}?t=${Date.now()}`;
+
+      console.log('URL pública:', imageUrl);
+
+      // 6. Salva a URL no banco
+      const { error: updateError } = await supabase
+        .from('usuario')
+        .update({
+          avatar_url: imageUrl,
+        })
+        .eq('id', currentSession.user.id);
+
+      if (updateError) {
+        console.error(
+          'Erro ao salvar avatar_url:',
+          updateError
+        );
+        throw updateError;
+      }
+
+      // 7. Atualiza a interface imediatamente
+      setUsuario((prev) => ({
+        ...prev,
+        avatar_url: imageUrl,
+      }));
+
+      console.log('Avatar salvo no banco com sucesso.');
+      console.log('==============================');
+
+      Alert.alert(
+        'Sucesso',
+        'Foto de perfil atualizada!'
+      );
 
     } catch (error) {
-      console.error('Erro ao fazer upload da imagem:', error.message);
-      Alert.alert('Erro', 'Não foi possível atualizar a foto de perfil.');
+      console.error('==============================');
+      console.error('ERRO NO UPLOAD DA IMAGEM');
+      console.error(error);
+      console.error('Mensagem:', error?.message);
+      console.error('==============================');
+
+      Alert.alert(
+        'Erro',
+        error?.message ||
+          'Não foi possível atualizar a foto de perfil.'
+      );
+
     } finally {
       setUploading(false);
     }
@@ -282,7 +348,7 @@ export default function Perfil({ navigation }) {
     }
 
     let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['image'], // <--- CORREÇÃO AQUI para usar array de string
+      mediaTypes: ['images'],
       allowsEditing: true,
       aspect: [1, 1],
       quality: 0.5,

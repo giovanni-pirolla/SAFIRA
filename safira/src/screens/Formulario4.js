@@ -36,18 +36,18 @@ export default function Formulario4({ navigation }) {
         .from('usuario')
         .update({
           formulario_preenchido: true,
-          limites_som: limites.som,
-          limites_luz: limites.luz,
         })
         .eq('id', session.user.id);
 
       if (error) {
-        console.error('Erro ao salvar limites do usuário:', error.message);
-        Alert.alert('Erro', 'Não foi possível salvar seus limites. Tente novamente.');
-      } else {
-        Alert.alert('Sucesso', 'Seus limites foram salvos com sucesso!');
-        navigation.navigate('TelaInicial');
+        console.error('Erro ao salvar formulário:', error);
+        return;
       }
+
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'TelaInicial' }],
+      });
     } catch (error) {
       console.error('Erro inesperado ao salvar limites:', error.message);
       Alert.alert('Erro', 'Ocorreu um erro inesperado. Tente novamente.');
