@@ -27,7 +27,6 @@ export default function LoginScreen({ navigation }) {
       setErro(error.message);
       return;
     }
-    // Sessão detectada automaticamente pelo AuthContext, navegação é automática
   }
 
   return (
