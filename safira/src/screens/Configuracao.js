@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, Alert, TextInput, Modal, Pressable, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, Alert, TextInput, Modal, Pressable, ScrollView, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import styles from './estilos/ConfiguracaoEstilos';
 import { useAuth } from '../contexts/AuthContext';
@@ -167,17 +167,19 @@ export default function Configuracao({ navigation }) {
         {/* Seção de Conta */}
         <Text style={styles.sectionTitle}>Conta</Text>
         <Pressable style={styles.optionContainer} onPress={() => Alert.alert('Funcionalidade', 'Abrir tela de Editar Perfil')}>
-          <Text style={styles.optionIcon}>👤</Text>
+          <Image style={styles.optionIcon} source={require('../../fotos/icon-people.png')}/>
           <Text style={styles.optionLabel}>Editar Perfil</Text>
           <Text style={styles.optionArrow}>›</Text>
         </Pressable>
+
         <Pressable style={styles.optionContainer} onPress={() => setModalVisible(true)}>
-          <Text style={styles.optionIcon}>🔑</Text>
+          <Image source={require('../../fotos/key-icon.png')} style={styles.optionIcon}/>
           <Text style={styles.optionLabel}>Alterar Senha</Text>
           <Text style={styles.optionArrow}>›</Text>
         </Pressable>
+
         <Pressable style={styles.optionContainer} onPress={() => Alert.alert('Funcionalidade', 'Abrir tela de Email')}>
-          <Text style={styles.optionIcon}>✉️</Text>
+          <Image style={styles.optionIcon} source={require('../../fotos/icon-email.png')} />
           <Text style={styles.optionLabel}>Email</Text>
           <Text style={styles.optionValue}>{userEmail}</Text>
           <Text style={styles.optionArrow}>›</Text>
@@ -186,18 +188,20 @@ export default function Configuracao({ navigation }) {
         {/* Seção de Preferências */}
         <Text style={styles.sectionTitle}>Preferências</Text>
         <Pressable style={styles.optionContainer} onPress={() => Alert.alert('Funcionalidade', 'Abrir tela de Tema')}>
-          <Text style={styles.optionIcon}>🌙</Text>
+          <Image style={styles.optionIcon} source={require('../../fotos/icon-moon.png')}/>
           <Text style={styles.optionLabel}>Tema</Text>
           <Text style={styles.optionValue}>Claro</Text>
           <Text style={styles.optionArrow}>›</Text>
         </Pressable>
+
         <Pressable style={styles.optionContainer} onPress={() => Alert.alert('Funcionalidade', 'Abrir tela de Notificações')}>
-          <Text style={styles.optionIcon}>🔔</Text>
+          <Image style={styles.optionIcon} source={require('../../fotos/icon-bell.png')} />
           <Text style={styles.optionLabel}>Notificações</Text>
           <Text style={styles.optionArrow}>›</Text>
         </Pressable>
+
         <Pressable style={styles.optionContainer} onPress={() => Alert.alert('Funcionalidade', 'Abrir tela de Unidades de Medida')}>
-          <Text style={styles.optionIcon}>📏</Text>
+          <Image style={styles.optionIcon} source={require('../../fotos/icon-ruler.png')}/>
           <Text style={styles.optionLabel}>Unidades de Medida</Text>
           <Text style={styles.optionArrow}>›</Text>
         </Pressable>
@@ -205,12 +209,13 @@ export default function Configuracao({ navigation }) {
         {/* Seção de Privacidade e Bem-Estar */}
         <Text style={styles.sectionTitle}>Privacidade e Bem-Estar</Text>
         <Pressable style={styles.optionContainer} onPress={() => Alert.alert('Funcionalidade', 'Abrir tela de Privacidade dos dados')}>
-          <Text style={styles.optionIcon}>🛡️</Text>
+          <Image style={styles.optionIcon} source={require('../../fotos/icon-shield.png')}/>
           <Text style={styles.optionLabel}>Privacidade dos dados</Text>
           <Text style={styles.optionArrow}>›</Text>
         </Pressable>
+
         <Pressable style={styles.optionContainer} onPress={handleViewCuidadores}>
-          <Text style={styles.optionIcon}>👥</Text>
+          <Image style={styles.optionIcon} source={require('../../fotos/icon-family.png')}/>
           <Text style={styles.optionLabel}>Cuidadores e Responsáveis</Text>
           <Text style={styles.optionArrow}>›</Text>
         </Pressable>

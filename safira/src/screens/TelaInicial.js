@@ -49,7 +49,7 @@ export default function TelaInicial({ navigation }) {
         <TouchableOpacity style={styles.notificationButton}
         onPress={() => navigation.navigate('Alerts')}
         >
-          <Text style={styles.notificationIcon}>🔔</Text>
+          <Image style={styles.notificationIcon} source={require('../../fotos/icon-bell.png')}/>
         </TouchableOpacity>
       </View>
 

@@ -55,7 +55,12 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   iconeEmoji: {
-    fontSize: 24,
+    width: 45,
+    height: 45,
+  },
+    iconeCaneta: {
+    width: 20,
+    height: 20,
   },
   cardConteudo: {
     flex: 1,

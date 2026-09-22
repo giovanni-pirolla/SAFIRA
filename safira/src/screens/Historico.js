@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { View, Text, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Text, TouchableOpacity, Dimensions, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LineChart } from 'react-native-chart-kit';
 import { buscarLeituras } from '../services/leiturasService';
@@ -8,9 +8,24 @@ import styles from './estilos/HistoricoEstilos';
 const { width } = Dimensions.get('window');
 
 const infoSensores = {
-  luminosidade: { nomeLegenda: 'Luminosidade', label: '☀️ Luminosidade', cor: '#F2A93B' },
-  ruido: { nomeLegenda: 'Ruído', label: '🔊 Ruído', cor: '#1B2A4A' },
-  temperatura: { nomeLegenda: 'Temperatura', label: '🌡️ Temperatura', cor: '#2F6FED' },
+  luminosidade: { 
+    nomeLegenda: 'Luminosidade', 
+    label: 'Luminosidade', 
+    imageSource: require('../../fotos/icon-sun.png'), 
+    cor: '#F2A93B' 
+  },
+  ruido: { 
+    nomeLegenda: 'Ruído', 
+    label: 'Ruído', 
+    imageSource: require('../../fotos/icon-sound.png'), 
+    cor: '#1B2A4A' 
+  },
+  temperatura: { 
+    nomeLegenda: 'Temperatura', 
+    label: 'Temperatura', 
+    imageSource: require('../../fotos/icon-temperature.png'), // Ajuste para o nome correto do arquivo se necessário
+    cor: '#2F6FED' 
+  },
 };
 
 const periodos = ['Hoje', '7 Dias', '30 Dias'];
@@ -134,7 +149,7 @@ export default function Historico({ navigation, route }) {
           })}
         </View>
 
-        {/* Filtro de sensores */}
+        {/* Filtro de sensores com imagens */}
         <View style={styles.sensorWrapper}>
           <TouchableOpacity
             style={[styles.sensorButton, sensorAtivo === 'todos' && styles.sensorButtonAtivo]}
@@ -144,6 +159,7 @@ export default function Historico({ navigation, route }) {
               Todos
             </Text>
           </TouchableOpacity>
+
           {sensoresDisponiveis.map((sensor) => {
             const ativo = sensorAtivo === sensor.id;
             return (
@@ -152,9 +168,16 @@ export default function Historico({ navigation, route }) {
                 style={[styles.sensorButton, ativo && styles.sensorButtonAtivo]}
                 onPress={() => setSensorAtivo(sensor.id)}
               >
-                <Text style={[styles.sensorText, ativo && styles.sensorTextAtivo]}>
-                  {sensor.label}
-                </Text>
+                <View style={styles.sensorButtonContent}>
+                  <Image 
+                    source={sensor.imageSource} 
+                    style={[styles.sensorIcon, { tintColor: ativo ? '#FFFFFF' : sensor.cor }]} 
+                    resizeMode="contain" 
+                  />
+                  <Text style={[styles.sensorText, ativo && styles.sensorTextAtivo]}>
+                    {sensor.label}
+                  </Text>
+                </View>
               </TouchableOpacity>
             );
           })}
@@ -200,11 +223,15 @@ export default function Historico({ navigation, route }) {
               style={styles.chart}
             />
 
-            {/* Legenda */}
+            {/* Legenda com imagens */}
             <View style={styles.legendWrapper}>
               {sensoresParaExibir.map((sensor) => (
                 <View key={sensor.id} style={styles.legendItem}>
-                  <View style={[styles.legendDot, { backgroundColor: sensor.cor }]} />
+                  <Image 
+                    source={sensor.imageSource} 
+                    style={[styles.legendIcon, { tintColor: sensor.cor }]} 
+                    resizeMode="contain" 
+                  />
                   <Text style={styles.legendText}>{sensor.nomeLegenda}</Text>
                 </View>
               ))}

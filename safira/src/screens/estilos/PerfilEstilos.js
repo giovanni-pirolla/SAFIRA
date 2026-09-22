@@ -270,6 +270,51 @@ const styles = StyleSheet.create({
     color: '#2F6FED',
     fontWeight: 'bold',
   },
+  avatarPlaceholderImage: {
+    width: 30,
+    height: 30,
+    tintColor: '#5A5A5A',
+  },
+  avatarImage: { 
+    width: '100%',
+    height: '100%',
+    borderRadius: 30, 
+  },
+  engrenagemImagem: {
+    width: 24,
+    height: 24,
+    tintColor: '#5A5A5A',
+  },
+  resumoIconeCircle: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  resumoIconeImagem: {
+    width: 20,
+    height: 20,
+  },
+  limiteIconeCircle: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 10,
+  },
+  limiteIconeImagem: {
+    width: 20,
+    height: 20,
+  },
+  infoImagem: {
+    width: 20,
+    height: 20,
+    tintColor: '#00BCD4',
+    marginRight: 10,
+  },
 });
 
 export default styles;

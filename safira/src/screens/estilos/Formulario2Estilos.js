@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
   infoCardContainer: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    backgroundColor: '#E6EEFC', // Fundo azul claro para o card de informação
+    backgroundColor: '#E6EEFC',
     borderRadius: 12,
     padding: 15,
     marginHorizontal: 20,
@@ -108,14 +108,14 @@ const styles = StyleSheet.create({
   infoCardIcon: {
     width: 24,
     height: 24,
-    tintColor: '#2F6FED', // Cor azul para o ícone de volume
+    tintColor: '#2F6FED',
     marginRight: 10,
     marginTop: 2,
   },
   infoCardText: {
     flex: 1,
     fontSize: 14,
-    color: '#2F6FED', // Cor azul para o texto
+    color: '#2F6FED',
     lineHeight: 20,
   },
 
@@ -131,11 +131,11 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginHorizontal: 20,
     marginBottom: 25,
-    overflow: 'hidden', // Garante que a imagem respeite o borderRadius
+    overflow: 'hidden',
   },
   situationImage: {
     width: '100%',
-    height: 180, // Altura fixa para a imagem
+    height: 180,
     resizeMode: 'cover',
   },
   situationDetails: {
@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
   situationDetailSoundLevelIcon: {
     width: 16,
     height: 16,
-    tintColor: '#5A5A5A', // Cor para o ícone de volume pequeno
+    tintColor: '#5A5A5A',
     marginRight: 5,
   },
   situationDetailSoundLevelText: {
@@ -183,35 +183,42 @@ const styles = StyleSheet.create({
   },
   feelingOptionsContainer: {
     flexDirection: 'row',
-    flexWrap: 'wrap', // Permite que os itens quebrem a linha
-    justifyContent: 'space-between', // Distribui os itens uniformemente
-    marginHorizontal: 15, // Ajuste para espaçamento lateral
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    marginHorizontal: 20,
     marginBottom: 20,
   },
   feelingOption: {
-    width: (width - 60) / 2, // Calcula a largura para 2 colunas com espaçamento
+    width: '48%',
     backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    paddingVertical: 15,
-    paddingHorizontal: 10,
+    borderRadius: 16,
+    padding: 16,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 10, // Espaçamento entre as linhas
-    borderWidth: 1,
+    borderWidth: 2,
     borderColor: '#EFEFEF',
+    marginBottom: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
   },
   feelingOptionActive: {
-    borderColor: '#2F6FED', // Borda azul quando selecionado
-    backgroundColor: '#E6EEFC', // Fundo azul claro quando selecionado
+    borderColor: '#2F6FED',
+    backgroundColor: '#E6EEFC',
   },
   feelingOptionEmoji: {
-    fontSize: 30, // Tamanho do emoji
-    marginBottom: 5,
+    width: 48,
+    height: 48,
+    resizeMode: 'contain',
+    marginBottom: 8,
   },
   feelingOptionText: {
     fontSize: 13,
     color: '#1B1B1B',
     textAlign: 'center',
+    fontWeight: '500',
   },
 
   navigationButtonsContainer: {
@@ -225,7 +232,7 @@ const styles = StyleSheet.create({
   },
   previousButton: {
     flex: 1,
-    backgroundColor: '#E0E0E0', // Cinza para o botão Anterior
+    backgroundColor: '#E0E0E0',
     borderRadius: 12,
     paddingVertical: 14,
     alignItems: 'center',
@@ -238,7 +245,7 @@ const styles = StyleSheet.create({
   },
   nextButton: {
     flex: 1,
-    backgroundColor: '#2F6FED', // Azul para o botão Próxima
+    backgroundColor: '#2F6FED',
     borderRadius: 12,
     paddingVertical: 14,
     alignItems: 'center',
@@ -268,7 +275,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   progressBottomFill: {
-    width: '50%', // Ajuste conforme a situação atual (ex: 50% para 1 de 2)
+    width: '50%',
     height: '100%',
     backgroundColor: '#2F6FED',
     borderRadius: 3,

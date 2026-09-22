@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, Pressable, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, Pressable, ScrollView, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import styles from './estilos/DispositivosEstilos';
 
@@ -12,13 +12,13 @@ function DispositivoCard({ nome, ambiente, status, bateria, atualizado }) {
   return (
     <TouchableOpacity style={styles.card}>
       <View style={styles.iconeQuadrado}>
-        <Text style={styles.iconeEmoji}>🪪</Text>
+        <Image style={styles.iconeEmoji} source={require('../../fotos/icon-cracha.png')}/>
       </View>
 
       <View style={styles.cardConteudo}>
         <View style={styles.nomeLinha}>
           <Text style={styles.nomeTexto}>{nome}</Text>
-          <Text style={styles.editarIcone}>✎</Text>
+          <Image style={styles.iconeCaneta} source={require('../../fotos/icon-pen.png')}/>
         </View>
 
         <Text style={styles.ambienteTexto}>{ambiente}</Text>
