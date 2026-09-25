@@ -158,9 +158,10 @@ const styles = StyleSheet.create({
     marginBottom: 30, // Mais margem inferior
   },
   tipIcon: {
-    fontSize: 22, // Ícone de lâmpada maior
-    marginRight: 12,
-    color: '#F2A93B', // Cor amarela para o ícone
+  marginRight: 15,
+  width: 36,
+  height: 36,
+  resizeMode: 'contain',
   },
   tipText: {
     flex: 1,

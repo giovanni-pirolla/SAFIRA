@@ -1,4 +1,4 @@
-import { StyleSheet, Dimensions, Platform } from 'react-native'; // CORRIGIDO: Importado Platform
+import { StyleSheet, Dimensions, Platform } from 'react-native';
 
 const { width } = Dimensions.get('window');
 
@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
   infoCardContainer: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    backgroundColor: '#E6EEFC', // Fundo azul claro
+    backgroundColor: '#E6EEFC',
     borderRadius: 12,
     padding: 15,
     marginHorizontal: 20,
@@ -107,12 +107,12 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
     marginRight: 10,
-    tintColor: '#2F6FED', // Cor azul para o ícone
+    tintColor: '#2F6FED',
   },
   infoCardText: {
     flex: 1,
     fontSize: 13,
-    color: '#2F6FED', // Cor azul para o texto
+    color: '#2F6FED',
     lineHeight: 18,
   },
 
@@ -128,8 +128,8 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginHorizontal: 20,
     marginBottom: 25,
-    overflow: 'hidden', // Garante que a imagem respeite o borderRadius
-    ...Platform.select({ // CORRIGIDO: Platform agora está importado
+    overflow: 'hidden',
+    ...Platform.select({
       ios: {
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
@@ -197,29 +197,37 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   feelingOption: {
-    width: (width - 60) / 2,
+    width: (width - 45) / 2,
     backgroundColor: '#FFFFFF',
     borderRadius: 12,
     paddingVertical: 15,
     paddingHorizontal: 10,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 10,
-    borderWidth: 1,
+    marginBottom: 12,
+    borderWidth: 2,
     borderColor: '#EFEFEF',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
   },
   feelingOptionActive: {
     borderColor: '#2F6FED',
     backgroundColor: '#E6EEFC',
   },
   feelingOptionEmoji: {
-    fontSize: 30,
-    marginBottom: 5,
+    width: 48,
+    height: 48,
+    resizeMode: 'contain',
+    marginBottom: 8,
   },
   feelingOptionText: {
     fontSize: 13,
     color: '#1B1B1B',
     textAlign: 'center',
+    fontWeight: '500',
   },
 
   navigationButtonsContainer: {
@@ -276,7 +284,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   progressBottomFill: {
-    width: '100%', // CORRIGIDO: Para a barra ficar inteiramente azul
+    width: '100%',
     height: '100%',
     backgroundColor: '#2F6FED',
     borderRadius: 3,

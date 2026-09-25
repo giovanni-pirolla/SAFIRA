@@ -133,6 +133,20 @@ const styles = StyleSheet.create({
     color: '#2F6FED',
     fontWeight: 'bold',
   },
+  sensorButtonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  sensorIcon: {
+    width: 14,
+    height: 14,
+    marginRight: 5,
+  },
+  legendIcon: {
+    width: 14,
+    height: 14,
+    marginRight: 5,
+  },
 });
 
 export default styles;
