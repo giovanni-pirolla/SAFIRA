@@ -5,7 +5,7 @@ import paho.mqtt.client as mqtt
 from dotenv import load_dotenv
 
 from supabase_client import (
-    buscar_dispositivo_por_nome,
+    buscar_dispositivo_por_id_unico,
     salvar_leitura
 )
 
@@ -44,7 +44,7 @@ def on_message(client, userdata, message):
             print("Leitura ignorada: campos ausentes.")
             return
 
-        dispositivo = buscar_dispositivo_por_nome(DEVICE_NAME)
+        dispositivo = buscar_dispositivo_por_id_unico(DEVICE_NAME)
 
         if dispositivo is None:
             print(
@@ -68,7 +68,6 @@ def on_message(client, userdata, message):
 
         print(
             f"Leitura salva | "
-            f"Dispositivo: {dispositivo['nome']} | "
             f"Luz: {luminosidade} | "
             f"Som: {ruido}"
         )
