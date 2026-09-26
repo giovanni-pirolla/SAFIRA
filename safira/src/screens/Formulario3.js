@@ -92,28 +92,31 @@ export default function Formulario3({ navigation, route }) {
             style={[styles.feelingOption, selectedFeeling === 'confortavel' && styles.feelingOptionActive]}
             onPress={() => setSelectedFeeling('confortavel')}
           >
-            <Text style={styles.feelingOptionEmoji}>😊</Text>
+            <Image style={styles.feelingOptionEmoji} source={require('../../fotos/meme.png')} />
             <Text style={styles.feelingOptionText}>Confortável</Text>
           </TouchableOpacity>
+
           <TouchableOpacity
             style={[styles.feelingOption, selectedFeeling === 'levemente_desconfortavel' && styles.feelingOptionActive]}
             onPress={() => setSelectedFeeling('levemente_desconfortavel')}
           >
-            <Text style={styles.feelingOptionEmoji}>😐</Text>
+            <Image style={styles.feelingOptionEmoji} source={require('../../fotos/icon-indiferente.png')} />
             <Text style={styles.feelingOptionText}>Levemente desconfortável</Text>
           </TouchableOpacity>
+
           <TouchableOpacity
             style={[styles.feelingOption, selectedFeeling === 'desconfortavel' && styles.feelingOptionActive]}
             onPress={() => setSelectedFeeling('desconfortavel')}
           >
-            <Text style={styles.feelingOptionEmoji}>😟</Text>
+            <Image style={styles.feelingOptionEmoji} source={require('../../fotos/icon-inconfortavel.png')} />
             <Text style={styles.feelingOptionText}>Desconfortável</Text>
           </TouchableOpacity>
+
           <TouchableOpacity
             style={[styles.feelingOption, selectedFeeling === 'muito_desconfortavel' && styles.feelingOptionActive]}
             onPress={() => setSelectedFeeling('muito_desconfortavel')}
           >
-            <Text style={styles.feelingOptionEmoji}>😡</Text>
+            <Image style={styles.feelingOptionEmoji} source={require('../../fotos/icon-angry.png')} />
             <Text style={styles.feelingOptionText}>Muito desconfortável</Text>
           </TouchableOpacity>
         </View>

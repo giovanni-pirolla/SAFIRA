@@ -8,11 +8,11 @@ import styles from './estilos/PerfilEstilos';
 import * as ImagePicker from 'expo-image-picker';
 import { decode } from 'base64-arraybuffer';
 
-function ResumoCard({ emoji, corFundo, valor, label }) {
+function ResumoCard({ imagem, corFundo, valor, label }) {
   return (
     <View style={styles.resumoCard}>
       <View style={[styles.resumoIconeCircle, { backgroundColor: corFundo }]}>
-        <Text style={styles.resumoIconeTexto}>{emoji}</Text>
+        <Image source={imagem} style={styles.resumoIconeImagem} resizeMode="contain" />
       </View>
       <Text style={styles.resumoValor}>{valor}</Text>
       <Text style={styles.resumoLabel}>{label}</Text>
@@ -20,7 +20,7 @@ function ResumoCard({ emoji, corFundo, valor, label }) {
   );
 }
 
-function LimiteSensorial({ emoji, corIcone, titulo, recomendado, valorAtual, min, max, corBarra }) {
+function LimiteSensorial({ imagem, corIcone, titulo, recomendado, valorAtual, min, max, corBarra }) {
   const safeMin = Number(min) || 0;
   const safeMax = Number(max) || 1;
   const safeValorAtual = Number(valorAtual) || 0;
@@ -32,7 +32,7 @@ function LimiteSensorial({ emoji, corIcone, titulo, recomendado, valorAtual, min
     <View style={styles.limiteCard}>
       <View style={styles.limiteHeader}>
         <View style={[styles.limiteIconeCircle, { backgroundColor: corIcone }]}>
-          <Text style={styles.limiteIconeTexto}>{emoji}</Text>
+          <Image source={imagem} style={[styles.limiteIconeImagem, { tintColor: corBarra }]} resizeMode="contain" />
         </View>
         <View style={styles.limiteTextos}>
           <Text style={styles.limiteTitulo}>{titulo}</Text>
@@ -68,19 +68,31 @@ export default function Perfil({ navigation }) {
   const { session } = useAuth();
 
   const limitesSomPadrao = {
-    confortavel_ate: 50, atencao_de: 51, atencao_ate: 70, desconfortavel_acima: 71,
-    texto_confortavel: 'até 50 dB', texto_atencao: '51 - 70 dB', texto_desconfortavel: 'acima de 70 dB'
+    confortavel_ate: 50, 
+    atencao_de: 51, 
+    atencao_ate: 70, 
+    desconfortavel_acima: 71,
+    texto_confortavel: 'até 50 dB', 
+    texto_atencao: '51 - 70 dB', 
+    texto_desconfortavel: 'acima de 70 dB'
   };
+
   const limitesLuzPadrao = {
-    confortavel_ate: 300, atencao_de: 301, atencao_ate: 700, desconfortavel_acima: 701,
-    texto_confortavel: 'até 300 lux', texto_atencao: '301 - 700 lux', texto_desconfortavel: 'acima de 700 lux'
+    confortavel_ate: 300, 
+    atencao_de: 301, 
+    atencao_ate: 700, 
+    desconfortavel_acima: 701,
+    texto_confortavel: 'até 300 lux', 
+    texto_atencao: '301 - 700 lux', 
+    texto_desconfortavel: 'acima de 700 lux'
   };
 
-  const limitesSom = usuario?.limites_som || limitesSomPadrao;
-  const limitesLuz = usuario?.limites_luz || limitesLuzPadrao;
+  // Garante que se o objeto do usuario ou os limites vierem vazios, usará os padrões com segurança
+  const limitesSom = { ...limitesSomPadrao, ...(usuario?.limites_som || {}) };
+  const limitesLuz = { ...limitesLuzPadrao, ...(usuario?.limites_luz || {}) };
 
-  const valorAtualRuido = (limitesSom.atencao_de + limitesSom.atencao_ate) / 2;
-  const valorAtualLuminosidade = (limitesLuz.atencao_de + limitesLuz.atencao_ate) / 2;
+  const valorAtualRuido = (Number(limitesSom.atencao_de) + Number(limitesSom.atencao_ate)) / 2;
+  const valorAtualLuminosidade = (Number(limitesLuz.atencao_de) + Number(limitesLuz.atencao_ate)) / 2;
 
   const carregarPerfil = useCallback(async () => {
     setCarregando(true);
@@ -342,7 +354,7 @@ export default function Perfil({ navigation }) {
                 key={usuario.avatar_url}
               />
             ) : (
-              <Text style={styles.avatarIcone}>👤</Text>
+              <Image source={require('../../fotos/icon-people.png')} style={styles.avatarPlaceholderImage} resizeMode="contain" />
             )}
           </Pressable>
 
@@ -358,23 +370,23 @@ export default function Perfil({ navigation }) {
             style={styles.engrenagemButton}
             onPress={() => navigation.navigate('Configuracao')}
           >
-            <Text style={styles.engrenagemIcone}>⚙️</Text>
+            <Image source={require('../../fotos/icon-settings.png')} style={styles.engrenagemImagem} resizeMode="contain" />
           </Pressable>
         </View>
 
         <Text style={styles.secaoTitulo}>Resumo da Conta</Text>
 
         <View style={styles.resumoWrapper}>
-          <ResumoCard emoji="📱" corFundo="#DFF5E5" valor={totalDispositivos} label="Dispositivos conectados" />
-          <ResumoCard emoji="🛡️" corFundo="#DCEAFB" valor={diasDeUso} label="Dias de Uso ativo" />
-          <ResumoCard emoji="📈" corFundo="#EDE1FB" valor={totalLeituras} label="Registros leituras" />
-          <ResumoCard emoji="⚠️" corFundo="#FCEBCB" valor={alertasHoje} label="Alertas hoje" />
+          <ResumoCard imagem={require('../../fotos/icon-device.png')} corFundo="#DFF5E5" valor={totalDispositivos} label="Dispositivos conectados" />
+          <ResumoCard imagem={require('../../fotos/icon-shield.png')} corFundo="#DCEAFB" valor={diasDeUso} label="Dias de Uso ativo" />
+          <ResumoCard imagem={require('../../fotos/icon-chart.png')} corFundo="#EDE1FB" valor={totalLeituras} label="Registros leituras" />
+          <ResumoCard imagem={require('../../fotos/icon-aviso.png')} corFundo="#FCEBCB" valor={alertasHoje} label="Alertas hoje" />
         </View>
 
         <Text style={styles.secaoTitulo}>Limites sensoriais definidos</Text>
 
         <LimiteSensorial
-          emoji="☀️"
+          imagem={require('../../fotos/icon-sun.png')}
           corIcone="#FCEBCB"
           titulo="Luminosidade"
           recomendado={`Recomendado: ${limitesLuz.texto_confortavel} - ${limitesLuz.texto_atencao}`}
@@ -385,7 +397,7 @@ export default function Perfil({ navigation }) {
         />
 
         <LimiteSensorial
-          emoji="🔊"
+          imagem={require('../../fotos/icon-sound.png')}
           corIcone="#DCEAFB"
           titulo="Ruído"
           recomendado={`Recomendado: ${limitesSom.texto_confortavel} - ${limitesSom.texto_atencao}`}
@@ -396,7 +408,7 @@ export default function Perfil({ navigation }) {
         />
 
         <LimiteSensorial
-          emoji="🌡️"
+          imagem={require('../../fotos/icon-temperature.png')}
           corIcone="#FBE0DE"
           titulo="Temperatura"
           recomendado={`Recomendado: ${configuracaoPrincipal?.max_temperatura ?? '—'} °C`}
@@ -407,7 +419,7 @@ export default function Perfil({ navigation }) {
         />
 
         <View style={styles.infoBox}>
-          <Text style={styles.infoIcone}>ⓘ</Text>
+          <Image source={require('../../fotos/icon-info.png')} style={styles.infoImagem} resizeMode="contain" />
           <Text style={styles.infoTexto}>
             Acima ou próximo do valor definido, você receberá um alerta
           </Text>

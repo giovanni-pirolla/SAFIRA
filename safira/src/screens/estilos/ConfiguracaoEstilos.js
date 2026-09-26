@@ -60,12 +60,12 @@ const styles = StyleSheet.create({
       },
     }),
   },
-  optionIcon: {
-    fontSize: 20,
-    marginRight: 15,
-    width: 24,
-    textAlign: 'center',
-  },
+optionIcon: {
+  marginRight: 15,
+  width: 24,
+  height: 24,
+  resizeMode: 'contain',
+},
   optionLabel: {
     fontSize: 16,
     color: '#1B1B1B',
