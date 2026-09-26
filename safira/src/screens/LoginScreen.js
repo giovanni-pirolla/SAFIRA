@@ -19,7 +19,7 @@ export default function LoginScreen({ navigation }) {
     setErro('');
     setCarregando(true);
 
-    const { error } = await login(email.trim(), senha);
+    const { data, error } = await login(email.trim(), senha);
 
     setCarregando(false);
 
@@ -27,6 +27,8 @@ export default function LoginScreen({ navigation }) {
       setErro(error.message);
       return;
     }
+
+    console.log('USUÁRIO LOGADO:', data?.user);
   }
 
   return (
