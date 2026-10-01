@@ -5386,3 +5386,13 @@
 {"_e":"metro:client_log","_t":1790456197449,"level":"log","data":["DISPOSITIVOS DO USUÁRIO:","[{\"id_unico\": \"FC:B4:67:4F:0A:EE\", \"iddispositivos\": 22, \"idusuario\": \"7177298a-bd14-4c7f-98fd-382edb5b6b88\", \"nome\": \"ESP32-SAFIRA-001\", \"status\": true}]"]}
 {"_e":"metro:client_log","_t":1790456198671,"level":"log","data":["UID DO USUÁRIO:","7177298a-bd14-4c7f-98fd-382edb5b6b88"]}
 {"_e":"metro:client_log","_t":1790456198789,"level":"log","data":["DISPOSITIVOS DO USUÁRIO:","[{\"id_unico\": \"FC:B4:67:4F:0A:EE\", \"iddispositivos\": 22, \"idusuario\": \"7177298a-bd14-4c7f-98fd-382edb5b6b88\", \"nome\": \"ESP32-SAFIRA-001\", \"status\": true}]"]}
+{"_e":"root:init","_t":1790857601156,"format":"v0-jsonl","version":"57.0.26"}
+{"_e":"devserver:start","_t":1790857601672,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../..\\..\\app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
+{"_e":"metro:config","_t":1790857643049,"serverRoot":"../..\\..","projectRoot":"../..\\..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
+{"_e":"expo:dev-tools-plugin:load","_t":1790857656423,"plugins":[]}
+{"_e":"metro:instantiate","_t":1790857712733,"atlas":false,"workers":8,"host":"::","port":8081}
+{"_e":"root:init","_t":1790857982382,"format":"v0-jsonl","version":"57.0.26"}
+{"_e":"devserver:start","_t":1790857982685,"mode":"development","web":true,"baseUrl":"","asyncRoutes":false,"routerRoot":"../..\\..\\app","serverComponents":false,"serverActions":false,"serverRendering":false,"apiRoutes":false,"exporting":false}
+{"_e":"metro:config","_t":1790858002660,"serverRoot":"../..\\..","projectRoot":"../..\\..","exporting":false,"flags":{"autolinkingModuleResolution":false,"serverActions":false,"serverComponents":false,"reactCompiler":false,"optimizeGraph":false,"treeshaking":false,"logbox":false}}
+{"_e":"expo:dev-tools-plugin:load","_t":1790858007993,"plugins":[]}
+{"_e":"metro:instantiate","_t":1790858036203,"atlas":false,"workers":8,"host":"::","port":8081}

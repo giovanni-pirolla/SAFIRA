@@ -304,7 +304,7 @@ export default function AddDispositivo() {
       }
 
       const resposta = await fetch(
-        'http://192.168.0.26:8000/dispositivos',
+        'http://192.168.0.26:8000/dispositivos',   // Bentão: 172.17.2.6 | Casa: 192.168.0.26
         {
           method: 'POST',
           headers: {
