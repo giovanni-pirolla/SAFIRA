@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, CORSMiddleware
 from contextlib import asynccontextmanager
 from pydantic import BaseModel
 import threading
@@ -25,6 +25,15 @@ app = FastAPI(
     title="SAFIRA API",
     description="API responsável pela comunicação entre o aplicativo e o backend.",
     version="1.0.0"
+)
+
+# Middleware CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 class DispositivoCadastro(BaseModel):
