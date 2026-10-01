@@ -35,7 +35,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   notificationIcon: {
-    fontSize: 16,
+    width: 25,
+    height: 25,
   },
   content: {
     flex: 1,

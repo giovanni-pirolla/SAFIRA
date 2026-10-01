@@ -86,7 +86,7 @@ export default function Formulario1({ navigation }) {
 
         {/* Dica */}
         <View style={styles.tipBox}>
-          <Text style={styles.tipIcon}>💡</Text>
+          <Image style={styles.tipIcon} source={require('../../fotos/icon-light.png')}/> {/* icone lampada */}
           <Text style={styles.tipText}>
             <Text style={styles.tipTextBold}>Dica</Text>{'\n'}
             Não existe resposta certa ou errada. O mais importante é ser sincero(a) com o que você sente.

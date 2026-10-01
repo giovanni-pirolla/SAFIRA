@@ -28,13 +28,13 @@ function DispositivoCard({ nome, id_unico, status, bateria, atualizado }) {
   return (
     <TouchableOpacity style={styles.card}>
       <View style={styles.iconeQuadrado}>
-        <Text style={styles.iconeEmoji}>🪪</Text>
+        <Image style={styles.iconeEmoji} source={require('../../fotos/icon-cracha.png')}/>
       </View>
 
       <View style={styles.cardConteudo}>
         <View style={styles.nomeLinha}>
           <Text style={styles.nomeTexto}>{nome}</Text>
-          <Text style={styles.editarIcone}>✎</Text>
+          <Image style={styles.iconeCaneta} source={require('../../fotos/icon-pen.png')}/>
         </View>
 
         <Text style={styles.ambienteTexto}>{id_unico}</Text>

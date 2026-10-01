@@ -15,8 +15,11 @@ import { useAuth } from '../contexts/AuthContext';
 
 const { width } = Dimensions.get('window');
 
-export default function Formulario4({ navigation }) {
+export default function Formulario4({ navigation, route }) {
   const { session, setFormularioPreenchido } = useAuth();
+  
+  // Recebe os sentimentos escolhidos nos formulários anteriores (Formulario2 e Formulario3)
+  const { somFeeling, luzFeeling } = route.params || {};
 
   const handleSaveProfile = async () => {
     if (!session || !session.user) {
@@ -27,26 +30,31 @@ export default function Formulario4({ navigation }) {
       return;
     }
 
-    const limites = {
-      som: {
-        confortavel_ate: 55,
-        atencao_de: 56,
-        atencao_ate: 70,
-        desconfortavel_acima: 70,
-      },
-      luz: {
-        confortavel_ate: 300,
-        atencao_de: 301,
-        atencao_ate: 700,
-        desconfortavel_acima: 700,
-      },
+    // Exemplo de objeto de limites (pode ajustar conforme o somFeeling e luzFeeling se necessário)
+    const limitesSom = {
+      confortavel_ate: 55,
+      atencao_de: 56,
+      atencao_ate: 70,
+      desconfortavel_acima: 70,
+      sentimento_escolhido: somFeeling,
+    };
+
+    const limitesLuz = {
+      confortavel_ate: 300,
+      atencao_de: 301,
+      atencao_ate: 700,
+      desconfortavel_acima: 700,
+      sentimento_escolhido: luzFeeling,
     };
 
     try {
+      // Atualiza os dados no Supabase salvando os limites e definindo formulario_preenchido como true
       const { error } = await supabase
         .from('usuario')
         .update({
           formulario_preenchido: true,
+          limites_som: limitesSom,
+          limites_luz: limitesLuz,
         })
         .eq('id', session.user.id);
 
@@ -59,7 +67,8 @@ export default function Formulario4({ navigation }) {
         return;
       }
 
-      // Atualiza o estado global do formulário
+      // Atualiza o estado global do contexto. 
+      // Isso fará com que o Stack Navigator atualize automaticamente para a TelaInicial!
       setFormularioPreenchido(true);
 
     } catch (error) {
@@ -116,7 +125,7 @@ export default function Formulario4({ navigation }) {
                   'Não foi possível resetar seus limites. Tente novamente.'
                 );
               } else {
-                // Atualiza também o estado global
+                // Atualiza também o estado global para retornar ao início do fluxo
                 setFormularioPreenchido(false);
 
                 Alert.alert(

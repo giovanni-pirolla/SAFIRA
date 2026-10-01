@@ -1,11 +1,11 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import styles from './estilos/AlertsEstilos';
 
 function AlertaCard({ tipo, titulo, hora, descricao }) {
   const configPorTipo = {
-    aviso: { simbolo: '⚠️', corIcone: styles.iconeAviso, corBolinha: styles.bolinhaAviso },
+    aviso: { simbolo: require('../../fotos/icon-aviso.png'), corIcone: styles.iconeAviso, corBolinha: styles.bolinhaAviso },
     perigo: { simbolo: '!', corIcone: styles.iconePerigo, corBolinha: styles.bolinhaPerigo },
     sucesso: { simbolo: '✓', corIcone: styles.iconeSucesso, corBolinha: styles.bolinhaSucesso },
   };
