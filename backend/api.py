@@ -1,7 +1,25 @@
 from fastapi import FastAPI, HTTPException
+from contextlib import asynccontextmanager
 from pydantic import BaseModel
+import threading
 
+from mqtt_client import iniciar_mqtt
 from supabase_client import cadastrar_dispositivo
+
+def iniciar_mqtt_em_background():
+    iniciar_mqtt()
+    
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    thread_mqtt = threading.Thread(
+        target=iniciar_mqtt_em_background,
+        daemon=True
+    )
+    thread_mqtt.start()
+
+    yield
+    
+    print("Desconectando do MQTT e encerrando a API...")
 
 app = FastAPI(
     title="SAFIRA API",
