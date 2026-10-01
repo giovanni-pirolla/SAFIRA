@@ -1,4 +1,5 @@
-from fastapi import FastAPI, HTTPException, CORSMiddleware
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from pydantic import BaseModel
 import threading
