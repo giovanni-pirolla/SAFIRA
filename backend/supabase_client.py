@@ -18,7 +18,7 @@ def buscar_dispositivo_por_id_unico(id_unico: str):
         supabase
         .table('dispositivos')
         .select('iddispositivos, idusuario, nome, status, id_unico')
-        .eq('nome', id_unico)
+        .eq('id_unico', id_unico)
         .limit(1)
         .execute()
     )
