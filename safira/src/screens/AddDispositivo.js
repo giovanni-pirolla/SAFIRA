@@ -25,7 +25,7 @@ import { supabase } from '../services/supabase';
 
 const bleManager = new BleManager();
 
-export default function AddDispositivo() {
+export default function AddDispositivo({ navigation }) {
   const [scanning, setScanning] = useState(false);
   const [devices, setDevices] = useState([]);
   const [connectingId, setConnectingId] = useState(null);
@@ -304,7 +304,7 @@ export default function AddDispositivo() {
       }
 
       const resposta = await fetch(
-        'https://safira-6qma.onrender.com/dispositivos',   // Bentão: 172.17.2.6 | Casa: 192.168.0.26
+        'https://safira-6qma.onrender.com/dispositivos',  
         {
           method: 'POST',
           headers: {
@@ -362,10 +362,14 @@ export default function AddDispositivo() {
     <View style={styles.container}>
 
       <View style={styles.content}>
-
-        <Text style={styles.title}>
-          Conecte seu crachá
-        </Text>
+      {/* Cabeçalho */}
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+          <Text style={styles.backButtonText}>{'<'}</Text>
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>Conecte seu Crachá</Text>
+        <View style={styles.headerSpacer} />
+      </View>
 
         <Text style={styles.description}>
           Ligue seu crachá SAFIRA e mantenha-o próximo
