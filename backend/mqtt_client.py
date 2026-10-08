@@ -4,10 +4,7 @@ import os
 import paho.mqtt.client as mqtt
 from dotenv import load_dotenv
 
-from supabase_client import (
-    buscar_dispositivo_por_id_unico,
-    salvar_leitura
-)
+from supabase_client import *
 
 load_dotenv()
 
@@ -38,7 +35,32 @@ def on_connect(client, userdata, flags, reason_code, properties):
             f"Falha na conexão com o HiveMQ. "
             f"Código: {reason_code}"
         )
-
+     
+def publicar_limites_sensoriais(client, id_unico, limites):
+    topico_limites = f'safira/devices/{id_unico}/limits'
+    
+    mensagem = json.dumps(limites)
+    
+    resultado = client.publish(
+        topico_limites,
+        mensagem
+    )
+    
+    if resultado.rc != 0:
+        print(
+            f"Falha ao publicar limites sensoriais | "
+            f"Dispositivo: {id_unico} | "
+            f"Código de retorno: {resultado.rc}"
+        )
+        return False
+    
+    print(
+        f"Limites sensoriais enviados | "
+        f"Dispositivo: {id_unico} | "
+        f"Limites: {limites}"
+    )
+    
+    return True   
 
 def publicar_status_dispositivo(client, id_unico, cadastrado):
     topico_status = f"safira/devices/{id_unico}/status"
@@ -113,6 +135,20 @@ def processar_solicitacao_status(client, message):
         f"Dispositivo '{id_unico}' cadastrado."
     )
 
+    limites = buscar_limites_por_dispositivo(id_unico)
+    
+    if limites is None:
+        print(
+            f"Limites sensoriais não encontrados | "
+            f"Dispositivo: {id_unico}"
+        )
+        return
+
+    publicar_limites_sensoriais(
+        client,
+        id_unico,
+        limites
+    )
 
 def processar_telemetria(client, message):
     partes_topico = message.topic.split("/")
@@ -231,3 +267,5 @@ def iniciar_mqtt():
     )
 
     client.loop_forever()
+    
+iniciar_mqtt()

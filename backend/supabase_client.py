@@ -28,6 +28,46 @@ def buscar_dispositivo_por_id_unico(id_unico: str):
     
     return resposta.data[0]
 
+def buscar_usuario_por_dispositivo(id_unico: str):
+    resposta = (
+        supabase
+        .table('dispositivos')
+        .select('idusuario')
+        .eq('id_unico', id_unico)
+        .limit(1)
+        .execute()
+    )
+    
+    if not resposta.data:
+        return None
+    
+    return resposta.data[0]
+
+def buscar_limites_sensoriais(idusuario: str):
+    resposta = (
+        supabase
+        .table('usuario')
+        .select('limites_som, limites_luz')
+        .eq('id', idusuario)
+        .limit(1)
+        .execute()
+    )
+
+    if not resposta.data:
+        return None
+
+    return resposta.data[0]
+
+def buscar_limites_por_dispositivo(id_unico: str):
+    usuario = buscar_usuario_por_dispositivo(id_unico)
+
+    if usuario is None:
+        return None
+
+    idusuario = usuario["idusuario"]
+
+    return buscar_limites_sensoriais(idusuario)
+
 def salvar_leitura(
     id_dispositivo: str,
     luminosidade: float,

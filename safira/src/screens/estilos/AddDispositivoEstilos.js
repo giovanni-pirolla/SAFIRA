@@ -16,18 +16,15 @@ const styles = StyleSheet.create({
   ========================================================= */
 
   header: {
-    height: 58,
-
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-
+    marginBottom: 15,
     paddingHorizontal: 18,
-
+    paddingVertical: 14,
     borderBottomWidth: 1,
     borderBottomColor: '#EFEFEF',
-
-    backgroundColor: '#FAFAFA',
+    backgroundColor: '#F5F7FA',
   },
 
   backButton: {
@@ -85,7 +82,7 @@ const styles = StyleSheet.create({
 
     textAlign: 'center',
 
-    marginBottom: 18,
+    marginBottom: 15,
   },
 
   /* =========================================================

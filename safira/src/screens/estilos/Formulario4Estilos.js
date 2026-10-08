@@ -98,12 +98,23 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 15,
     marginHorizontal: 20,
+    marginTop: 20,
     marginBottom: 25,
   },
+
+  infoIcon: {
+    width: 24,
+    height: 24,
+  },
+
   infoBoxText: {
     fontSize: 14,
     color: '#2F6FED', // Cor azul para o texto
     lineHeight: 20,
+  },
+
+  limitCard: {
+      marginHorizontal: 20,
   },
 
   limitSection: {
