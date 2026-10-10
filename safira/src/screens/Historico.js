@@ -3,28 +3,30 @@ import { View, Text, TouchableOpacity, Dimensions, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LineChart } from 'react-native-chart-kit';
 import { buscarLeituras } from '../services/leiturasService';
+import { listarDispositivos } from '../services/dispositivoService';
+import { useAuth } from '../contexts/AuthContext';
 import styles from './estilos/HistoricoEstilos';
 
 const { width } = Dimensions.get('window');
 
 const infoSensores = {
-  luminosidade: { 
-    nomeLegenda: 'Luminosidade', 
-    label: 'Luminosidade', 
-    imageSource: require('../../fotos/icon-sun.png'), 
-    cor: '#F2A93B' 
+  luminosidade: {
+    nomeLegenda: 'Luminosidade',
+    label: 'Luminosidade',
+    imageSource: require('../../fotos/icon-sun.png'),
+    cor: '#F2A93B',
   },
-  ruido: { 
-    nomeLegenda: 'Ruído', 
-    label: 'Ruído', 
-    imageSource: require('../../fotos/icon-sound.png'), 
-    cor: '#1B2A4A' 
+  ruido: {
+    nomeLegenda: 'Ruído',
+    label: 'Ruído',
+    imageSource: require('../../fotos/icon-sound.png'),
+    cor: '#1B2A4A',
   },
-  temperatura: { 
-    nomeLegenda: 'Temperatura', 
-    label: 'Temperatura', 
-    imageSource: require('../../fotos/icon-temperature.png'), // Ajuste para o nome correto do arquivo se necessário
-    cor: '#2F6FED' 
+  temperatura: {
+    nomeLegenda: 'Temperatura',
+    label: 'Temperatura',
+    imageSource: require('../../fotos/icon-temperature.png'),
+    cor: '#2F6FED',
   },
 };
 
@@ -45,20 +47,55 @@ function calcularDataInicio(periodo) {
 }
 
 export default function Historico({ navigation, route }) {
-  const iddispositivos = route?.params?.iddispositivos;
+  const { session } = useAuth();
+  const idusuario = session?.user?.id;
 
+  const [iddispositivos, setIddispositivos] = useState(route?.params?.iddispositivos ?? null);
   const [periodoAtivo, setPeriodoAtivo] = useState('Hoje');
   const [sensorAtivo, setSensorAtivo] = useState('todos');
   const [leituras, setLeituras] = useState([]);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState('');
 
-  const carregarLeituras = useCallback(async () => {
-    if (!iddispositivos) {
-      setErro('Nenhum dispositivo selecionado.');
+  // Caso a tela não receba o iddispositivos por parâmetro,
+  // busca automaticamente o dispositivo do usuário logado.
+  const resolverDispositivo = useCallback(async () => {
+    if (route?.params?.iddispositivos) {
+      setIddispositivos(route.params.iddispositivos);
+      return;
+    }
+
+    if (!idusuario) {
+      setErro('Usuário não autenticado.');
       setCarregando(false);
       return;
     }
+
+    const { data, error } = await listarDispositivos();
+
+    if (error) {
+      setErro(error.message);
+      setCarregando(false);
+      return;
+    }
+
+    const dispositivoDoUsuario = data?.[0];
+
+    if (!dispositivoDoUsuario) {
+      setErro('Nenhum dispositivo encontrado para este usuário.');
+      setCarregando(false);
+      return;
+    }
+
+    setIddispositivos(dispositivoDoUsuario.iddispositivos);
+  }, [route?.params?.iddispositivos, idusuario]);
+
+  useEffect(() => {
+    resolverDispositivo();
+  }, [resolverDispositivo]);
+
+  const carregarLeituras = useCallback(async () => {
+    if (!iddispositivos) return;
 
     setCarregando(true);
     setErro('');
@@ -88,17 +125,18 @@ export default function Historico({ navigation, route }) {
     {
       id: 'luminosidade',
       ...infoSensores.luminosidade,
-      data: leituras.map((l) => Number(l.luminosidade)),
+      data: leituras.map((l) => (l.luminosidade !== null ? Number(l.luminosidade) : null)),
     },
     {
       id: 'ruido',
       ...infoSensores.ruido,
-      data: leituras.map((l) => Number(l.ruidos)),
+      data: leituras.map((l) => (l.ruidos !== null ? Number(l.ruidos) : null)),
     },
     {
       id: 'temperatura',
       ...infoSensores.temperatura,
-      data: leituras.map((l) => Number(l.temperatura)),
+      emBreve: true,
+      data: [],
     },
   ];
 
@@ -107,12 +145,18 @@ export default function Historico({ navigation, route }) {
       ? sensoresDisponiveis
       : sensoresDisponiveis.filter((s) => s.id === sensorAtivo);
 
+  // Enquanto o sensor "temperatura" não coleta dados reais,
+  // ele é excluído do gráfico e tratado como aviso cinematográfico.
+  const sensoresComDadosReais = sensoresParaExibir.filter((s) => !s.emBreve);
+  const exibirApenasAvisoTemperatura =
+    sensorAtivo === 'temperatura' && sensoresComDadosReais.length === 0;
+
   const dadosGrafico = {
     labels: labels.length > 0 ? labels : [''],
     datasets:
-      sensoresParaExibir.length > 0
-        ? sensoresParaExibir.map((sensor) => ({
-            data: sensor.data.length > 0 ? sensor.data : [0],
+      sensoresComDadosReais.length > 0
+        ? sensoresComDadosReais.map((sensor) => ({
+            data: sensor.data.length > 0 ? sensor.data.map((v) => v ?? 0) : [0],
             color: () => sensor.cor,
             strokeWidth: 2.5,
           }))
@@ -169,10 +213,10 @@ export default function Historico({ navigation, route }) {
                 onPress={() => setSensorAtivo(sensor.id)}
               >
                 <View style={styles.sensorButtonContent}>
-                  <Image 
-                    source={sensor.imageSource} 
-                    style={[styles.sensorIcon, { tintColor: ativo ? '#FFFFFF' : sensor.cor }]} 
-                    resizeMode="contain" 
+                  <Image
+                    source={sensor.imageSource}
+                    style={[styles.sensorIcon, { tintColor: ativo ? '#FFFFFF' : sensor.cor }]}
+                    resizeMode="contain"
                   />
                   <Text style={[styles.sensorText, ativo && styles.sensorTextAtivo]}>
                     {sensor.label}
@@ -189,6 +233,12 @@ export default function Historico({ navigation, route }) {
           <Text style={{ color: '#E44B4B', fontSize: 13, marginTop: 10 }}>{erro}</Text>
         ) : carregando ? (
           <Text style={{ color: '#8A8A8A', fontSize: 13, marginTop: 10 }}>Carregando...</Text>
+        ) : exibirApenasAvisoTemperatura ? (
+          <View style={styles.avisoTemperaturaWrapper}>
+            <Text style={styles.avisoTemperaturaTexto}>
+              ESTAMOS TRABALHANDO NESSA FUNÇÃO!{'\n'}EM BREVE - 2027
+            </Text>
+          </View>
         ) : leituras.length === 0 ? (
           <Text style={{ color: '#8A8A8A', fontSize: 13, marginTop: 10 }}>
             Nenhuma leitura encontrada nesse período.
@@ -225,17 +275,31 @@ export default function Historico({ navigation, route }) {
 
             {/* Legenda com imagens */}
             <View style={styles.legendWrapper}>
-              {sensoresParaExibir.map((sensor) => (
+              {sensoresComDadosReais.map((sensor) => (
                 <View key={sensor.id} style={styles.legendItem}>
-                  <Image 
-                    source={sensor.imageSource} 
-                    style={[styles.legendIcon, { tintColor: sensor.cor }]} 
-                    resizeMode="contain" 
+                  <Image
+                    source={sensor.imageSource}
+                    style={[styles.legendIcon, { tintColor: sensor.cor }]}
+                    resizeMode="contain"
                   />
                   <Text style={styles.legendText}>{sensor.nomeLegenda}</Text>
                 </View>
               ))}
             </View>
+
+            {/* Aviso de temperatura quando "Todos" está selecionado */}
+            {sensorAtivo === 'todos' && (
+              <View style={styles.avisoTemperaturaWrapperPequeno}>
+                <Image
+                  source={infoSensores.temperatura.imageSource}
+                  style={[styles.legendIcon, { tintColor: infoSensores.temperatura.cor }]}
+                  resizeMode="contain"
+                />
+                <Text style={styles.avisoTemperaturaTextoPequeno}>
+                  Temperatura: ESTAMOS TRABALHANDO NESSA FUNÇÃO! EM BREVE - 2027
+                </Text>
+              </View>
+            )}
           </>
         )}
       </View>
