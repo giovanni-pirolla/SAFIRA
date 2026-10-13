@@ -9,7 +9,31 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { supabase } from '../services/supabase';
+import { buscarDataUltimaLeitura } from '../services/leiturasService';
 import styles from './estilos/DispositivosEstilos';
+
+const TEXTO_SEM_DADOS = 'Sem dados recentes';
+
+// Formata a data/hora da última leitura (ex.: "26/09/2026 às 20:50").
+function formatarUltimaLeitura(dataHora) {
+  if (!dataHora) return TEXTO_SEM_DADOS;
+
+  // Normaliza o timestamp do Postgres/Supabase para ISO 8601 que o Date entende em qualquer motor JS:
+  // "2026-09-26 20:49:42.058235+00" -> "2026-09-26T20:49:42.058+00:00"
+  let texto = String(dataHora).trim().replace(' ', 'T');
+  texto = texto.replace(/(\.\d{3})\d+/, '$1'); // mantém só milissegundos
+  texto = texto.replace(/([+-]\d{2})$/, '$1:00'); // "+00" -> "+00:00"
+
+  const data = new Date(texto);
+  if (isNaN(data.getTime())) return TEXTO_SEM_DADOS;
+
+  // Formatação manual: toLocale*String pode retornar vazio em alguns ambientes (ex.: Hermes/Android).
+  const dois = (n) => String(n).padStart(2, '0');
+  const dia = `${dois(data.getDate())}/${dois(data.getMonth() + 1)}/${data.getFullYear()}`;
+  const hora = `${dois(data.getHours())}:${dois(data.getMinutes())}`;
+
+  return `${dia} às ${hora}`;
+}
 
 function DispositivoCard({ nome, id_unico, status, bateria, atualizado }) {
   const ativo = status === 'Ativo';
@@ -124,7 +148,21 @@ export default function Dispositivos({ navigation }) {
 
         console.log('DISPOSITIVOS DO USUÁRIO:', data);
 
-        setDispositivos(data || []);
+        // Busca a data/hora da última leitura de cada dispositivo.
+        // Se falhar para algum, o card apenas mostra a mensagem padrão.
+        const dispositivosComLeitura = await Promise.all(
+          (data || []).map(async (dispositivo) => {
+            const { data: ultima } = await buscarDataUltimaLeitura(
+              dispositivo.iddispositivos
+            );
+            return {
+              ...dispositivo,
+              ultimaLeitura: ultima?.data_hora ?? null,
+            };
+          })
+        );
+
+        setDispositivos(dispositivosComLeitura);
 
       } catch (error) {
 
@@ -217,7 +255,11 @@ export default function Dispositivos({ navigation }) {
 
               bateria={100}
 
-              atualizado="Sem dados recentes"
+              atualizado={(() => {
+                const texto = formatarUltimaLeitura(dispositivo.ultimaLeitura);
+                console.log('TEXTO DO CARD:', texto);
+                return texto;
+              })()}
             />
 
           ))}

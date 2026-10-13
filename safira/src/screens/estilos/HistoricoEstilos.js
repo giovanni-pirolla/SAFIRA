@@ -147,6 +147,37 @@ const styles = StyleSheet.create({
     height: 14,
     marginRight: 5,
   },
+  avisoTemperaturaWrapper: {
+    marginTop: 30,
+    paddingVertical: 40,
+    paddingHorizontal: 20,
+    borderRadius: 12,
+    backgroundColor: '#F4F7FF',
+    borderWidth: 1,
+    borderColor: '#DCE6FB',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  avisoTemperaturaTexto: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#2F6FED',
+    textAlign: 'center',
+    lineHeight: 20,
+  },
+  avisoTemperaturaWrapperPequeno: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 10,
+    paddingHorizontal: 10,
+  },
+  avisoTemperaturaTextoPequeno: {
+    fontSize: 11,
+    color: '#8A8A8A',
+    fontStyle: 'italic',
+    flexShrink: 1,
+  },
 });
 
 export default styles;
