@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   View,
   Text,
@@ -6,162 +6,250 @@ import {
   TouchableOpacity,
   ScrollView,
   Alert,
-  Dimensions
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+
 import styles from './estilos/Formulario4Estilos';
 import { supabase } from '../services/supabase';
 import { useAuth } from '../contexts/AuthContext';
 
-const { width } = Dimensions.get('window');
+// Calcula os limites personalizados de som.
+const calcularLimitesSom = (respostas) => {
+  const respostasValidas = respostas.filter(
+    resposta =>
+      resposta.valor_sensor !== null &&
+      resposta.valor_sensor !== undefined &&
+      resposta.nivel_desconforto !== null &&
+      resposta.nivel_desconforto !== undefined
+  );
 
-export default function Formulario4({ navigation, route }) {
-  const { session, setFormularioPreenchido } = useAuth();
-  
-  // Recebe os sentimentos escolhidos nos formulários anteriores (Formulario2 e Formulario3)
-  const { somFeeling, luzFeeling } = route.params || {};
+  if (respostasValidas.length === 0) {
+    return {
+      confortavel_ate: null,
+      desconforto_a_partir: null,
+    };
+  }
 
+  const confortaveis = respostasValidas
+    .filter(
+      resposta => resposta.nivel_desconforto === 1
+    )
+    .map(
+      resposta => Number(resposta.valor_sensor)
+    );
+
+  const desconfortaveis = respostasValidas
+    .filter(
+      resposta => resposta.nivel_desconforto > 1
+    )
+    .map(
+      resposta => Number(resposta.valor_sensor)
+    );
+
+  const confortavelAte =
+    confortaveis.length > 0
+      ? Math.max(...confortaveis)
+      : null;
+
+  const desconfortoAPartir =
+    desconfortaveis.length > 0
+      ? Math.min(...desconfortaveis)
+      : null;
+
+  return {
+    confortavel_ate: confortavelAte,
+    desconforto_a_partir: desconfortoAPartir,
+  };
+};
+
+// Calcula a faixa personalizada de luminosidade.
+const calcularLimitesLuz = (respostas) => {
+  const respostasValidas = respostas.filter(
+    resposta =>
+      resposta.valor_sensor !== null &&
+      resposta.valor_sensor !== undefined &&
+      resposta.nivel_desconforto !== null &&
+      resposta.nivel_desconforto !== undefined
+  );
+
+  if (respostasValidas.length === 0) {
+    return {
+      confortavel_de: null,
+      confortavel_ate: null,
+    };
+  }
+
+  const confortaveis = respostasValidas
+    .filter(
+      resposta => resposta.nivel_desconforto === 1
+    )
+    .map(
+      resposta => Number(resposta.valor_sensor)
+    );
+
+  if (confortaveis.length === 0) {
+    return {
+      confortavel_de: null,
+      confortavel_ate: null,
+    };
+  }
+
+  const confortavelDe = Math.min(
+    ...confortaveis
+  );
+
+  const confortavelAte = Math.max(
+    ...confortaveis
+  );
+
+  return {
+    confortavel_de: confortavelDe,
+    confortavel_ate: confortavelAte,
+  };
+};
+
+export default function Formulario4({
+  navigation,
+  route,
+}) {
+  const {
+    session,
+    setFormularioPreenchido,
+  } = useAuth();
+
+  const {
+    somRespostas = [],
+    luzRespostas = [],
+  } = route.params || {};
+
+  const limitesSom = useMemo(
+    () => calcularLimitesSom(somRespostas),
+    [somRespostas]
+  );
+
+  const limitesLuz = useMemo(
+    () => calcularLimitesLuz(luzRespostas),
+    [luzRespostas]
+  );
+
+  // Salva os limites personalizados no perfil do usuário.
   const handleSaveProfile = async () => {
     if (!session || !session.user) {
       Alert.alert(
         'Erro',
         'Usuário não autenticado. Por favor, faça login novamente.'
       );
+
       return;
     }
 
-    // Exemplo de objeto de limites (pode ajustar conforme o somFeeling e luzFeeling se necessário)
-    const limitesSom = {
-      confortavel_ate: 55,
-      atencao_de: 56,
-      atencao_ate: 70,
-      desconfortavel_acima: 70,
-      sentimento_escolhido: somFeeling,
-    };
+    const somValido =
+      limitesSom.confortavel_ate !== null ||
+      limitesSom.desconforto_a_partir !== null;
 
-    const limitesLuz = {
-      confortavel_ate: 300,
-      atencao_de: 301,
-      atencao_ate: 700,
-      desconfortavel_acima: 700,
-      sentimento_escolhido: luzFeeling,
-    };
+    const luzValida =
+      limitesLuz.confortavel_de !== null &&
+      limitesLuz.confortavel_ate !== null;
 
-    try {
-      // Atualiza os dados no Supabase salvando os limites e definindo formulario_preenchido como true
-      const { error } = await supabase
-        .from('usuario')
-        .update({
-          formulario_preenchido: true,
-          limites_som: limitesSom,
-          limites_luz: limitesLuz,
-        })
-        .eq('id', session.user.id);
+    if (!somValido) {
+      Alert.alert(
+        'Atenção',
+        'Não foi possível determinar seus limites de som com as respostas fornecidas.'
+      );
 
-      if (error) {
-        console.error('Erro ao salvar formulário:', error);
-        Alert.alert(
-          'Erro',
-          'Não foi possível salvar o formulário. Tente novamente.'
-        );
-        return;
-      }
+      return;
+    }
 
-      // Atualiza o estado global do contexto. 
-      // Isso fará com que o Stack Navigator atualize automaticamente para a TelaInicial!
-      setFormularioPreenchido(true);
+    if (!luzValida) {
+      Alert.alert(
+        'Atenção',
+        'Não foi possível determinar uma faixa confortável de luminosidade. É necessário ter pelo menos uma situação de luz classificada como confortável.'
+      );
 
-    } catch (error) {
+      return;
+    }
+
+    const { error } = await supabase
+      .from('usuario')
+      .update({
+        formulario_preenchido: true,
+        limites_som: limitesSom,
+        limites_luz: limitesLuz,
+      })
+      .eq('id', session.user.id);
+
+    if (error) {
       console.error(
-        'Erro inesperado ao salvar limites:',
-        error.message
+        'Erro ao salvar limites:',
+        error
       );
 
       Alert.alert(
         'Erro',
-        'Ocorreu um erro inesperado. Tente novamente.'
+        'Não foi possível salvar seus limites. Tente novamente.'
       );
-    }
-  };
 
-  const handleRetakeForm = () => {
+      return;
+    }
+
     Alert.alert(
-      'Refazer formulário',
-      'Você tem certeza que deseja refazer o formulário? Seus limites atuais serão apagados.',
+      'Perfil salvo!',
+      'Seus limites personalizados foram definidos com sucesso.',
       [
         {
-          text: 'Cancelar',
-          style: 'cancel',
-        },
-        {
-          text: 'Sim',
-          onPress: async () => {
-            if (!session || !session.user) {
-              Alert.alert(
-                'Erro',
-                'Usuário não autenticado. Por favor, faça login novamente.'
-              );
-              return;
-            }
-
-            try {
-              const { error } = await supabase
-                .from('usuario')
-                .update({
-                  formulario_preenchido: false,
-                  limites_som: null,
-                  limites_luz: null,
-                })
-                .eq('id', session.user.id);
-
-              if (error) {
-                console.error(
-                  'Erro ao resetar limites do usuário:',
-                  error.message
-                );
-
-                Alert.alert(
-                  'Erro',
-                  'Não foi possível resetar seus limites. Tente novamente.'
-                );
-              } else {
-                // Atualiza também o estado global para retornar ao início do fluxo
-                setFormularioPreenchido(false);
-
-                Alert.alert(
-                  'Sucesso',
-                  'Seus limites foram resetados. Você pode refazer o formulário.'
-                );
-              }
-            } catch (error) {
-              console.error(
-                'Erro inesperado ao resetar limites:',
-                error.message
-              );
-
-              Alert.alert(
-                'Erro',
-                'Ocorreu um erro inesperado ao resetar. Tente novamente.'
-              );
-            }
+          text: 'OK',
+          onPress: () => {
+            setFormularioPreenchido(true);
           },
         },
-      ],
-      { cancelable: false }
+      ]
     );
   };
 
-  const handlePrevious = () => {
-    navigation.goBack();
+  // Reinicia o formulário e remove os limites salvos.
+  const handleRetakeForm = async () => {
+    if (!session || !session.user) {
+      Alert.alert(
+        'Erro',
+        'Usuário não autenticado.'
+      );
+
+      return;
+    }
+
+    const { error } = await supabase
+      .from('usuario')
+      .update({
+        formulario_preenchido: false,
+        limites_som: null,
+        limites_luz: null,
+      })
+      .eq('id', session.user.id);
+
+    if (error) {
+      console.error(
+        'Erro ao reiniciar formulário:',
+        error
+      );
+
+      Alert.alert(
+        'Erro',
+        'Não foi possível reiniciar o formulário.'
+      );
+
+      return;
+    }
+
+    navigation.navigate('Formulario1');
   };
 
   return (
     <SafeAreaView style={styles.container}>
 
-      {/* Header */}
       <View style={styles.header}>
+
         <TouchableOpacity
-          onPress={handlePrevious}
+          onPress={() => navigation.goBack()}
           style={styles.backButton}
         >
           <Image
@@ -176,30 +264,39 @@ export default function Formulario4({ navigation, route }) {
           resizeMode="contain"
         />
 
-        <TouchableOpacity style={styles.helpButton}>
+        <TouchableOpacity
+          style={styles.helpButton}
+        >
           <Image
             source={require('../../fotos/question-mark.png')}
             style={styles.helpIcon}
           />
         </TouchableOpacity>
+
       </View>
 
-      {/* Progress Bar */}
       <View style={styles.progressBar}>
+
         <View style={styles.progressStep}>
-          <Text style={styles.progressText}>1</Text>
+          <Text style={styles.progressText}>
+            1
+          </Text>
         </View>
 
         <View style={styles.progressLine} />
 
         <View style={styles.progressStep}>
-          <Text style={styles.progressText}>2</Text>
+          <Text style={styles.progressText}>
+            2
+          </Text>
         </View>
 
         <View style={styles.progressLine} />
 
         <View style={styles.progressStep}>
-          <Text style={styles.progressText}>3</Text>
+          <Text style={styles.progressText}>
+            3
+          </Text>
         </View>
 
         <View style={styles.progressLine} />
@@ -207,187 +304,251 @@ export default function Formulario4({ navigation, route }) {
         <View
           style={[
             styles.progressStep,
-            styles.progressStepActive
+            styles.progressStepActive,
           ]}
         >
-          <Text style={styles.progressTextActive}>4</Text>
-        </View>
-      </View>
-
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-
-        {/* Main Content */}
-        <Text style={styles.mainTitle}>
-          4. Resumo dos seus limites
-        </Text>
-
-        <Text style={styles.description}>
-          Com base nas suas respostas, definimos os seguintes limites personalizados.
-        </Text>
-
-        {/* Info Box */}
-        <View style={styles.infoBox}>
-          <Text style={styles.infoBoxText}>
-            Esses limites serão usados pelo SAFIRA para te avisar quando o ambiente estiver se aproximando ou
-            ultrapassando seu nível de conforto.
+          <Text style={styles.progressTextActive}>
+            4
           </Text>
         </View>
 
-        {/* Sound Limits */}
-        <View style={styles.limitSection}>
+      </View>
+
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+      >
+
+        <Text style={styles.mainTitle}>
+          4. Seus limites personalizados
+        </Text>
+
+        <Text style={styles.description}>
+          Com base nas situações que você avaliou,
+          identificamos uma faixa personalizada de
+          conforto para sons e luminosidade.
+        </Text>
+
+        <View style={styles.limitCard}>
+
           <View style={styles.limitHeader}>
+
             <Image
               source={require('../../fotos/icon-sound.png')}
               style={styles.limitIcon}
             />
 
             <Text style={styles.limitTitle}>
-              Som (ruído)
+              Som
             </Text>
+
           </View>
 
-          <View style={styles.limitBarContainer}>
+          <Text style={styles.limitDescription}>
+            Seu nível de conforto em relação ao
+            volume dos sons.
+          </Text>
+
+          <View style={styles.limitBar}>
+
             <View
               style={[
-                styles.limitBarSegment,
-                styles.limitBarComfort
+                styles.limitBarComfort,
+                {
+                  flex:
+                    limitesSom.confortavel_ate !== null
+                      ? 1
+                      : 0,
+                },
               ]}
             />
 
             <View
               style={[
-                styles.limitBarSegment,
-                styles.limitBarAttention
+                styles.limitBarAttention,
+                {
+                  flex:
+                    limitesSom.desconforto_a_partir !== null
+                      ? 1
+                      : 0,
+                },
               ]}
             />
 
             <View
               style={[
-                styles.limitBarSegment,
-                styles.limitBarDiscomfort
+                styles.limitBarDiscomfort,
+                {
+                  flex: 1,
+                },
               ]}
             />
+
           </View>
 
-          <View style={styles.limitLabelsContainer}>
-            <View style={styles.limitLabelItem}>
-              <Text style={styles.limitLabelText}>
+          <View style={styles.limitLabels}>
+
+            <View style={styles.limitLabel}>
+
+              <Text style={styles.limitLabelTitle}>
                 Confortável
               </Text>
 
               <Text style={styles.limitLabelValue}>
-                até 55 dB
+                {limitesSom.confortavel_ate !== null
+                  ? `até ${limitesSom.confortavel_ate} dB`
+                  : 'Não determinado'}
               </Text>
+
             </View>
 
-            <View style={styles.limitLabelItem}>
-              <Text style={styles.limitLabelText}>
+            <View style={styles.limitLabel}>
+
+              <Text style={styles.limitLabelTitle}>
                 Atenção
               </Text>
 
               <Text style={styles.limitLabelValue}>
-                56 – 70 dB
+                {limitesSom.desconforto_a_partir !== null
+                  ? `a partir de ${limitesSom.desconforto_a_partir} dB`
+                  : 'Não determinado'}
               </Text>
+
             </View>
 
-            <View style={styles.limitLabelItem}>
-              <Text style={styles.limitLabelText}>
+            <View style={styles.limitLabel}>
+
+              <Text style={styles.limitLabelTitle}>
                 Desconfortável
               </Text>
 
               <Text style={styles.limitLabelValue}>
-                acima de 70 dB
+                {limitesSom.desconforto_a_partir !== null
+                  ? `≥ ${limitesSom.desconforto_a_partir} dB`
+                  : 'Não determinado'}
               </Text>
+
             </View>
+
           </View>
+
         </View>
 
-        {/* Light Limits */}
-        <View style={styles.limitSection}>
+        <View style={styles.limitCard}>
+
           <View style={styles.limitHeader}>
+
             <Image
               source={require('../../fotos/icon-sun.png')}
               style={styles.limitIcon}
             />
 
             <Text style={styles.limitTitle}>
-              Luz (luminosidade)
+              Luminosidade
             </Text>
+
           </View>
 
-          <View style={styles.limitBarContainer}>
+          <Text style={styles.limitDescription}>
+            Sua faixa de luminosidade considerada
+            confortável.
+          </Text>
+
+          <View style={styles.limitBar}>
+
             <View
               style={[
-                styles.limitBarSegment,
-                styles.limitBarComfort
+                styles.limitBarDiscomfort,
+                {
+                  flex: 1,
+                },
               ]}
             />
 
             <View
               style={[
-                styles.limitBarSegment,
-                styles.limitBarAttention
+                styles.limitBarComfort,
+                {
+                  flex: 1,
+                },
               ]}
             />
 
             <View
               style={[
-                styles.limitBarSegment,
-                styles.limitBarDiscomfort
+                styles.limitBarDiscomfort,
+                {
+                  flex: 1,
+                },
               ]}
             />
+
           </View>
 
-          <View style={styles.limitLabelsContainer}>
-            <View style={styles.limitLabelItem}>
-              <Text style={styles.limitLabelText}>
+          <View style={styles.limitLabels}>
+
+            <View style={styles.limitLabel}>
+
+              <Text style={styles.limitLabelTitle}>
+                Pouca luz
+              </Text>
+
+              <Text style={styles.limitLabelValue}>
+                {limitesLuz.confortavel_de !== null
+                  ? `abaixo de ${limitesLuz.confortavel_de} lux`
+                  : 'Não determinado'}
+              </Text>
+
+            </View>
+
+            <View style={styles.limitLabel}>
+
+              <Text style={styles.limitLabelTitle}>
                 Confortável
               </Text>
 
               <Text style={styles.limitLabelValue}>
-                100 – 300 lux
+                {limitesLuz.confortavel_de !== null &&
+                limitesLuz.confortavel_ate !== null
+                  ? `${limitesLuz.confortavel_de}–${limitesLuz.confortavel_ate} lux`
+                  : 'Não determinado'}
               </Text>
+
             </View>
 
-            <View style={styles.limitLabelItem}>
-              <Text style={styles.limitLabelText}>
-                Atenção
+            <View style={styles.limitLabel}>
+
+              <Text style={styles.limitLabelTitle}>
+                Muita luz
               </Text>
 
               <Text style={styles.limitLabelValue}>
-                301 – 700 lux
-              </Text>
-            </View>
-
-            <View style={styles.limitLabelItem}>
-              <Text style={styles.limitLabelText}>
-                Desconfortável
+                {limitesLuz.confortavel_ate !== null
+                  ? `acima de ${limitesLuz.confortavel_ate} lux`
+                  : 'Não determinado'}
               </Text>
 
-              <Text style={styles.limitLabelValue}>
-                acima de 700 lux
-              </Text>
             </View>
+
           </View>
+
         </View>
 
-        {/* Ready Message */}
-        <View style={styles.readyBox}>
+        <View style={styles.infoBox}>
+
           <Image
-            source={require('../../fotos/icon-check.png')}
-            style={styles.readyIcon}
+            source={require('../../fotos/icon-light.png')}
+            style={styles.infoIcon}
           />
 
-          <Text style={styles.readyText}>
-            <Text style={styles.readyTextBold}>
-              Quase pronto!
-            </Text>
-            {'\n'}
-            Você pode editar esses limites depois, a qualquer momento, no seu perfil.
+          <Text style={styles.infoText}>
+            Esses valores são estimativas personalizadas
+            baseadas nas situações que você avaliou.
+            Eles podem ser alterados posteriormente
+            conforme suas necessidades.
           </Text>
+
         </View>
 
-        {/* Action Buttons */}
         <TouchableOpacity
           style={styles.saveButton}
           onPress={handleSaveProfile}
@@ -408,15 +569,25 @@ export default function Formulario4({ navigation, route }) {
 
       </ScrollView>
 
-      {/* Bottom Progress Indicator */}
       <View style={styles.progressBottomContainer}>
+
         <View style={styles.progressBottomBar}>
-          <View style={styles.progressBottomFill} />
+
+          <View
+            style={[
+              styles.progressBottomFill,
+              {
+                width: '100%',
+              },
+            ]}
+          />
+
         </View>
 
         <Text style={styles.progressBottomText}>
-          3 de 3
+          4 de 4
         </Text>
+
       </View>
 
     </SafeAreaView>

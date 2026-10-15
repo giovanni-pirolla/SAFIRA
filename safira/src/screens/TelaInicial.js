@@ -5,7 +5,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import styles from './estilos/TelaInicialEstilos';
 import { supabase } from '../services/supabase';
 import { useAuth } from '../contexts/AuthContext';
-import { listarDispositivos } from '../services/dispositivoService';
+import { listarDispositivos } from '../services/dispositivosService';
 import { buscarUltimaLeitura } from '../services/leiturasService';
 
 function StatusCard({ titulo, valor, unidade, status, progresso, min, max }) {

@@ -2,8 +2,8 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { View, Text, TouchableOpacity, Dimensions, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { LineChart } from 'react-native-chart-kit';
-import { buscarLeituras } from '../services/leiturasService';
-import { listarDispositivos } from '../services/dispositivoService';
+import { buscarUltimasLeituras, buscarMediasDiarias } from '../services/leiturasService';
+import { listarDispositivos } from '../services/dispositivosService';
 import { useAuth } from '../contexts/AuthContext';
 import styles from './estilos/HistoricoEstilos';
 
@@ -31,6 +31,9 @@ const infoSensores = {
 };
 
 const periodos = ['Hoje', '7 Dias', '30 Dias'];
+
+// Quantidade de leituras recentes exibidas no filtro "Hoje" (ajuste se quiser mais/menos pontos).
+const QTD_ULTIMAS_LEITURAS = 20;
 
 function calcularDataInicio(periodo) {
   const agora = new Date();
@@ -101,8 +104,32 @@ export default function Historico({ navigation, route }) {
     setErro('');
 
     const dataInicio = calcularDataInicio(periodoAtivo);
-    const { data, error } = await buscarLeituras(iddispositivos, dataInicio, 200);
 
+    if (periodoAtivo === 'Hoje') {
+      const { data, error } = await buscarUltimasLeituras(iddispositivos, dataInicio, QTD_ULTIMAS_LEITURAS);
+      setCarregando(false);
+
+      if (error) {
+        setErro(error.message);
+        return;
+      }
+
+      setLeituras(
+        (data ?? []).map((l) => ({
+          label: new Date(l.data_hora).toLocaleTimeString('pt-BR', {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+          }),
+          luminosidade: l.luminosidade !== null ? Number(l.luminosidade) : null,
+          ruidos: l.ruidos !== null ? Number(l.ruidos) : null,
+        }))
+      );
+      return;
+    }
+
+    // 7 e 30 dias: a média diária é calculada no banco (uma linha por dia).
+    const { data, error } = await buscarMediasDiarias(iddispositivos, dataInicio);
     setCarregando(false);
 
     if (error) {
@@ -110,27 +137,36 @@ export default function Historico({ navigation, route }) {
       return;
     }
 
-    setLeituras(data ?? []);
+    setLeituras(
+      (data ?? []).map((m) => {
+        const [, mes, dia] = m.dia.split('-');
+        return {
+          label: `${dia}/${mes}`,
+          luminosidade: m.luminosidade !== null ? Number(m.luminosidade) : null,
+          ruidos: m.ruidos !== null ? Number(m.ruidos) : null,
+        };
+      })
+    );
   }, [iddispositivos, periodoAtivo]);
 
   useEffect(() => {
     carregarLeituras();
   }, [carregarLeituras]);
 
-  const labels = leituras.map((l) =>
-    new Date(l.data_hora).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
-  );
+  // Mostra só alguns rótulos no eixo X para não poluir o gráfico.
+  const passoRotulo = periodoAtivo === '30 Dias' ? 5 : periodoAtivo === 'Hoje' ? 4 : 1;
+  const labels = leituras.map((l, i) => (i % passoRotulo === 0 ? l.label : ''));
 
   const sensoresDisponiveis = [
     {
       id: 'luminosidade',
       ...infoSensores.luminosidade,
-      data: leituras.map((l) => (l.luminosidade !== null ? Number(l.luminosidade) : null)),
+      data: leituras.map((l) => l.luminosidade),
     },
     {
       id: 'ruido',
       ...infoSensores.ruido,
-      data: leituras.map((l) => (l.ruidos !== null ? Number(l.ruidos) : null)),
+      data: leituras.map((l) => l.ruidos),
     },
     {
       id: 'temperatura',
@@ -227,7 +263,11 @@ export default function Historico({ navigation, route }) {
           })}
         </View>
 
-        <Text style={styles.sectionTitle}>Visão geral do dia</Text>
+        <Text style={styles.sectionTitle}>
+          {periodoAtivo === 'Hoje'
+            ? 'Últimas leituras de hoje'
+            : `Média diária - últimos ${periodoAtivo === '7 Dias' ? '7' : '30'} dias`}
+        </Text>
 
         {erro ? (
           <Text style={{ color: '#E44B4B', fontSize: 13, marginTop: 10 }}>{erro}</Text>

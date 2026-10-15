@@ -123,6 +123,7 @@ const styles = StyleSheet.create({
   atualizadoTexto: {
     fontSize: 11,
     color: '#8A8A8A',
+    width: 200,
   },
   ladoDireito: {
     alignItems: 'flex-end',

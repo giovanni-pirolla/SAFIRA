@@ -228,16 +228,16 @@ const styles = StyleSheet.create({
   },
   infoIcone: {
     fontSize: 20,
-    color: '#00BCD4',
+    color: '#043288',
     marginRight: 10,
   },
   infoTexto: {
     flex: 1,
     fontSize: 14,
-    color: '#00BCD4',
+    color: '#043288',
   },
   sairBotao: {
-    backgroundColor: '#FF4D4D',
+    backgroundColor: '#c90303',
     borderRadius: 10,
     paddingVertical: 15,
     alignItems: 'center',
@@ -312,7 +312,7 @@ const styles = StyleSheet.create({
   infoImagem: {
     width: 20,
     height: 20,
-    tintColor: '#00BCD4',
+    tintColor: '#043288',
     marginRight: 10,
   },
 });
