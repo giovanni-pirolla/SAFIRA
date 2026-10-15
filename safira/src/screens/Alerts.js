@@ -1,7 +1,10 @@
-import React from 'react';
+// Alerts.js
+import React, { useState, useCallback } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useFocusEffect } from '@react-navigation/native';
 import styles from './estilos/AlertsEstilos';
+import { buscarAlertas } from '../services/alertasServices';
 
 function AlertaCard({ tipo, titulo, hora, descricao }) {
   const configPorTipo = {
@@ -11,11 +14,16 @@ function AlertaCard({ tipo, titulo, hora, descricao }) {
   };
 
   const { simbolo, corIcone, corBolinha } = configPorTipo[tipo];
+  const ehImagem = typeof simbolo !== 'string';
 
   return (
     <View style={styles.card}>
       <View style={corIcone}>
-        <Text style={styles.iconeTexto}>{simbolo}</Text>
+        {ehImagem ? (
+          <Image source={simbolo} style={{ width: 18, height: 18 }} resizeMode="contain" />
+        ) : (
+          <Text style={styles.iconeTexto}>{simbolo}</Text>
+        )}
       </View>
 
       <View style={styles.cardConteudo}>
@@ -32,6 +40,32 @@ function AlertaCard({ tipo, titulo, hora, descricao }) {
 }
 
 export default function Alerts({ navigation }) {
+  const [alertasPorDia, setAlertasPorDia] = useState([]);
+  const [carregando, setCarregando] = useState(true);
+  const [erro, setErro] = useState('');
+
+  const carregarAlertas = useCallback(async () => {
+    setCarregando(true);
+    setErro('');
+
+    const { alertasPorDia: dados, error } = await buscarAlertas();
+
+    if (error) {
+      setErro('Não foi possível carregar os alertas.');
+      setCarregando(false);
+      return;
+    }
+
+    setAlertasPorDia(dados);
+    setCarregando(false);
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      carregarAlertas();
+    }, [carregarAlertas])
+  );
+
   return (
     <SafeAreaView style={styles.container}>
       {/* Cabeçalho */}
@@ -44,51 +78,44 @@ export default function Alerts({ navigation }) {
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <Text style={styles.secao}>Hoje</Text>
-
-        <AlertaCard
-          tipo="aviso"
-          titulo="Luminosidade Elevada"
-          hora="14:23"
-          descricao="A Luminosidade está se aproximando do Limite Definido."
-        />
-
-        <AlertaCard
-          tipo="perigo"
-          titulo="Ruído Alto"
-          hora="11:07"
-          descricao="Nível de Ruído ultrapassou o Limite Definido."
-        />
-
-        <Text style={styles.secao}>Ontem</Text>
-
-        <AlertaCard
-          tipo="sucesso"
-          titulo="Temperatura Normalizada"
-          hora="21:45"
-          descricao="Nível de Temperatura voltou para a faixa ideal."
-        />
-
-        <AlertaCard
-          tipo="perigo"
-          titulo="Temperatura Alta"
-          hora="21:30"
-          descricao="Nível de Temperatura ultrapassou o Limite Definido."
-        />
+        {erro ? (
+          <Text style={{ color: '#E44B4B', fontSize: 13, marginTop: 10 }}>{erro}</Text>
+        ) : carregando ? (
+          <Text style={{ color: '#8A8A8A', fontSize: 13, marginTop: 10 }}>Carregando...</Text>
+        ) : alertasPorDia.length === 0 ? (
+          <Text style={{ color: '#8A8A8A', fontSize: 13, marginTop: 10 }}>
+            Nenhum alerta registrado nos últimos dias.
+          </Text>
+        ) : (
+          alertasPorDia.map((grupo) => (
+            <View key={grupo.dia}>
+              <Text style={styles.secao}>{grupo.dia}</Text>
+              {grupo.alertas.map((alerta, index) => (
+                <AlertaCard
+                  key={`${grupo.dia}-${index}`}
+                  tipo={alerta.tipo}
+                  titulo={alerta.titulo}
+                  hora={alerta.hora}
+                  descricao={alerta.descricao}
+                />
+              ))}
+            </View>
+          ))
+        )}
       </ScrollView>
 
       {/* Rodapé de navegação */}
       <View style={styles.bottomBar}>
-        <TouchableOpacity style={styles.bottomItem}>
+        <TouchableOpacity style={styles.bottomItem} onPress={() => navigation.navigate('TelaInicial')}>
           <Text style={styles.bottomText}>Início</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.bottomItem}>
+        <TouchableOpacity style={styles.bottomItem} onPress={() => navigation.navigate('Historico')}>
           <Text style={styles.bottomText}>Histórico</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.bottomItem}>
+        <TouchableOpacity style={styles.bottomItem} onPress={() => navigation.navigate('Dispositivos')}>
           <Text style={styles.bottomText}>Dispositivos</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.bottomItem}>
+        <TouchableOpacity style={styles.bottomItem} onPress={() => navigation.navigate('Perfil')}>
           <Text style={styles.bottomText}>Perfil</Text>
         </TouchableOpacity>
       </View>

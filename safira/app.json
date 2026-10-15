@@ -14,7 +14,8 @@
     },
     "web": {},
     "plugins": [
-      "react-native-ble-plx"
+      "react-native-ble-plx",
+      "expo-background-task"
     ]
   }
 }
