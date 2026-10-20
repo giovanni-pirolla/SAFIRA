@@ -1,21 +1,54 @@
-import React from 'react';
+// Alerts.js
+import React, { useState, useCallback } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useFocusEffect } from '@react-navigation/native';
 import styles from './estilos/AlertsEstilos';
+import { buscarAlertas } from '../services/alertasServices';
+import { Ionicons } from '@expo/vector-icons';
+import BarraNavegacao from '../components/BarraNavegacao';
+
 
 function AlertaCard({ tipo, titulo, hora, descricao }) {
   const configPorTipo = {
-    aviso: { simbolo: require('../../fotos/icon-aviso.png'), corIcone: styles.iconeAviso, corBolinha: styles.bolinhaAviso },
-    perigo: { simbolo: '!', corIcone: styles.iconePerigo, corBolinha: styles.bolinhaPerigo },
-    sucesso: { simbolo: '✓', corIcone: styles.iconeSucesso, corBolinha: styles.bolinhaSucesso },
+    aviso: {
+      simbolo: 'alert-circle-outline',
+      corIcone: styles.iconeAviso,
+      corBolinha: styles.bolinhaAviso,
+      cor: '#ffffff',
+      size: 32,
+    },
+    perigo: {
+      simbolo: 'warning-outline',
+      corIcone: styles.iconePerigo,
+      corBolinha: styles.bolinhaPerigo,
+      cor: '#ffffff',
+      size: 32,
+    },
+    sucesso: {
+      simbolo: 'checkmark-circle-outline',
+      corIcone: styles.iconeSucesso,
+      corBolinha: styles.bolinhaSucesso,
+      cor: '#ffffff',
+      size: 32,
+    },
   };
 
-  const { simbolo, corIcone, corBolinha } = configPorTipo[tipo];
+  const {
+    simbolo,
+    corIcone,
+    corBolinha,
+    cor,
+  } = configPorTipo[tipo] || configPorTipo.aviso;
 
   return (
     <View style={styles.card}>
       <View style={corIcone}>
-        <Text style={styles.iconeTexto}>{simbolo}</Text>
+        <Ionicons
+          name={simbolo}
+          size={22}
+          color={cor}
+        />
       </View>
 
       <View style={styles.cardConteudo}>
@@ -23,6 +56,7 @@ function AlertaCard({ tipo, titulo, hora, descricao }) {
           <Text style={styles.cardTitulo}>{titulo}</Text>
           <Text style={styles.cardHora}>{hora}</Text>
         </View>
+
         <Text style={styles.cardDescricao}>{descricao}</Text>
       </View>
 
@@ -31,7 +65,34 @@ function AlertaCard({ tipo, titulo, hora, descricao }) {
   );
 }
 
+
 export default function Alerts({ navigation }) {
+  const [alertasPorDia, setAlertasPorDia] = useState([]);
+  const [carregando, setCarregando] = useState(true);
+  const [erro, setErro] = useState('');
+
+  const carregarAlertas = useCallback(async () => {
+    setCarregando(true);
+    setErro('');
+
+    const { alertasPorDia: dados, error } = await buscarAlertas();
+
+    if (error) {
+      setErro('Não foi possível carregar os alertas.');
+      setCarregando(false);
+      return;
+    }
+
+    setAlertasPorDia(dados);
+    setCarregando(false);
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      carregarAlertas();
+    }, [carregarAlertas])
+  );
+
   return (
     <SafeAreaView style={styles.container}>
       {/* Cabeçalho */}
@@ -44,54 +105,36 @@ export default function Alerts({ navigation }) {
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <Text style={styles.secao}>Hoje</Text>
-
-        <AlertaCard
-          tipo="aviso"
-          titulo="Luminosidade Elevada"
-          hora="14:23"
-          descricao="A Luminosidade está se aproximando do Limite Definido."
-        />
-
-        <AlertaCard
-          tipo="perigo"
-          titulo="Ruído Alto"
-          hora="11:07"
-          descricao="Nível de Ruído ultrapassou o Limite Definido."
-        />
-
-        <Text style={styles.secao}>Ontem</Text>
-
-        <AlertaCard
-          tipo="sucesso"
-          titulo="Temperatura Normalizada"
-          hora="21:45"
-          descricao="Nível de Temperatura voltou para a faixa ideal."
-        />
-
-        <AlertaCard
-          tipo="perigo"
-          titulo="Temperatura Alta"
-          hora="21:30"
-          descricao="Nível de Temperatura ultrapassou o Limite Definido."
-        />
+        {erro ? (
+          <Text style={{ color: '#E44B4B', fontSize: 13, marginTop: 10 }}>{erro}</Text>
+        ) : carregando ? (
+          <Text style={{ color: '#8A8A8A', fontSize: 13, marginTop: 10 }}>Carregando...</Text>
+        ) : alertasPorDia.length === 0 ? (
+          <Text style={{ color: '#8A8A8A', fontSize: 13, marginTop: 10 }}>
+            Nenhum alerta registrado nos últimos dias.
+          </Text>
+        ) : (
+          alertasPorDia.map((grupo) => (
+            <View key={grupo.dia}>
+              <Text style={styles.secao}>{grupo.dia}</Text>
+              {grupo.alertas.map((alerta, index) => (
+                <AlertaCard
+                  key={`${grupo.dia}-${index}`}
+                  tipo={alerta.tipo}
+                  titulo={alerta.titulo}
+                  hora={alerta.hora}
+                  descricao={alerta.descricao}
+                />
+              ))}
+            </View>
+          ))
+        )}
       </ScrollView>
 
       {/* Rodapé de navegação */}
-      <View style={styles.bottomBar}>
-        <TouchableOpacity style={styles.bottomItem}>
-          <Text style={styles.bottomText}>Início</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.bottomItem}>
-          <Text style={styles.bottomText}>Histórico</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.bottomItem}>
-          <Text style={styles.bottomText}>Dispositivos</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.bottomItem}>
-          <Text style={styles.bottomText}>Perfil</Text>
-        </TouchableOpacity>
-      </View>
+      <BarraNavegacao
+        navigation={navigation}
+      />
     </SafeAreaView>
   );
 }

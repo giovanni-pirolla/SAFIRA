@@ -209,17 +209,20 @@ const styles = StyleSheet.create({
     marginLeft: -10, // Centraliza o thumb
   },
   sliderLabels: {
+    width: 400,
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginTop: 5,
   },
   sliderLabelText: {
-    fontSize: 12,
-    color: '#5A5A5A',
+    fontSize: 10,
+    color: '#8A8A8A',
+    textAlign: 'center',
+    flex: 1,
   },
   infoBox: {
     flexDirection: 'row',
-    backgroundColor: '#E0F7FA',
+    backgroundColor: '#e0eefa',
     padding: 15,
     borderRadius: 10,
     marginHorizontal: 15,
@@ -237,7 +240,7 @@ const styles = StyleSheet.create({
     color: '#043288',
   },
   sairBotao: {
-    backgroundColor: '#c90303',
+    backgroundColor: '#E44B4B',
     borderRadius: 10,
     paddingVertical: 15,
     alignItems: 'center',
@@ -314,6 +317,63 @@ const styles = StyleSheet.create({
     height: 20,
     tintColor: '#043288',
     marginRight: 10,
+  },
+  trilhaContainer: {
+    height: 10,
+    borderRadius: 5,
+    flexDirection: 'row',
+    overflow: 'hidden',
+    backgroundColor: '#E0E0E0',
+    marginVertical: 10,
+  },
+  faixaAzul: {
+    height: '100%',
+    backgroundColor: '#2F6FED',
+  },
+  faixaAmarela: {
+    height: '100%',
+    backgroundColor: '#F2A93B',
+  },
+  faixaVermelha: {
+    height: '100%',
+    backgroundColor: '#E44B4B',
+  },
+  trilhaCinza: {
+    height: 30,
+    backgroundColor: '#EDEDED',
+    borderRadius: 6,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginVertical: 10,
+  },
+  textoSemDados: {
+    fontSize: 12,
+    color: '#8A8A8A',
+    fontStyle: 'italic',
+  },
+  legendaContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    marginTop: 10,
+    paddingTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: '#F0F0F0',
+  },
+  legendaItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  legendaBolinha: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    marginRight: 5,
+  },
+  legendaTexto: {
+    fontSize: 11,
+    color: '#666666',
+    fontWeight: '500',
   },
 });
 

@@ -10,11 +10,23 @@
       "supportsTablet": true
     },
     "android": {
-      "package": "com.anonymous.safira"
+      "package": "com.anonymous.safira",
+      "permissions": [
+        "android.permission.BLUETOOTH",
+        "android.permission.BLUETOOTH_ADMIN",
+        "android.permission.BLUETOOTH_CONNECT"
+      ]
     },
     "web": {},
     "plugins": [
-      "react-native-ble-plx"
-    ]
+      "react-native-ble-plx",
+      "expo-background-task",
+      "expo-font"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "b515181c-b08f-4760-9580-79b716bcd564"
+      }
+    }
   }
 }
