@@ -101,6 +101,8 @@ const styles = StyleSheet.create({
     color: '#1B1B1B',
   },
   cardHora: {
+    top: -2,
+    width: 35,
     fontSize: 12,
     color: '#8A8A8A',
   },

@@ -11,6 +11,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { supabase } from '../services/supabase';
 import { buscarDataUltimaLeitura } from '../services/leiturasService';
 import styles from './estilos/DispositivosEstilos';
+import { FontAwesome5, Ionicons } from '@expo/vector-icons';
+import BarraNavegacao from '../components/BarraNavegacao';
 
 const TEXTO_SEM_DADOS = 'Sem dados recentes';
 
@@ -53,13 +55,23 @@ function DispositivoCard({ nome, id_unico, status, bateria, atualizado }) {
   return (
     <TouchableOpacity style={styles.card}>
       <View style={styles.iconeQuadrado}>
-        <Image style={styles.iconeEmoji} source={require('../../fotos/icon-cracha.png')}/>
+        <FontAwesome5
+          name="id-badge"
+          size={28}
+          color="#1E3A8A"
+        />
       </View>
 
       <View style={styles.cardConteudo}>
         <View style={styles.nomeLinha}>
           <Text style={styles.nomeTexto}>{nome}</Text>
-          <Image style={styles.iconeCaneta} source={require('../../fotos/icon-pen.png')}/>
+
+          <Ionicons
+            name="create-outline"
+            size={19}
+            color="#777777"
+            style={styles.iconeCaneta}
+          />
         </View>
 
         <Text style={styles.ambienteTexto}>{id_unico}</Text>
@@ -95,8 +107,6 @@ function DispositivoCard({ nome, id_unico, status, bateria, atualizado }) {
             {status}
           </Text>
         </View>
-
-        <Text style={styles.setaTexto}>{'>'}</Text>
       </View>
     </TouchableOpacity>
   );
@@ -277,53 +287,10 @@ export default function Dispositivos({ navigation }) {
       </Pressable>
 
       {/* Rodapé de navegação */}
-      <View style={styles.bottomBar}>
-
-        <TouchableOpacity
-          style={styles.bottomItem}
-          onPress={() =>
-            navigation.navigate('TelaInicial')
-          }
-        >
-          <Text style={styles.bottomText}>
-            Início
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.bottomItem}
-          onPress={() =>
-            navigation.navigate('Historico')
-          }
-        >
-          <Text style={styles.bottomText}>
-            Histórico
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.bottomItem}>
-          <Text
-            style={[
-              styles.bottomText,
-              styles.bottomTextActive,
-            ]}
-          >
-            Dispositivos
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.bottomItem}
-          onPress={() =>
-            navigation.navigate('Perfil')
-          }
-        >
-          <Text style={styles.bottomText}>
-            Perfil
-          </Text>
-        </TouchableOpacity>
-
-      </View>
+      <BarraNavegacao
+        navigation={navigation}
+        abaAtiva="Dispositivos"
+      />
 
     </SafeAreaView>
   );

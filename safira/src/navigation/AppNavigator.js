@@ -17,6 +17,7 @@ import Dispositivos from '../screens/Dispositivos';
 import AddDispositivo from '../screens/AddDispositivo';
 import Perfil from '../screens/Perfil';
 import Configuracao from '../screens/Configuracao';
+import Alerts from '../screens/Alerts';
 
 const Stack = createNativeStackNavigator();
 
@@ -69,6 +70,11 @@ export default function AppNavigator() {
               <Stack.Screen
                 name="Configuracao"
                 component={Configuracao}
+              />
+
+              <Stack.Screen
+                name="Alerts"
+                component={Alerts}
               />
             </>
           ) : (

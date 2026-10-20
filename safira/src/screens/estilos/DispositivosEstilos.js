@@ -44,6 +44,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 14,
     marginBottom: 14,
+    boxShadow: '2px 5px 5px rgba(0, 0, 0, 0.1)',
   },
   iconeQuadrado: {
     width: 52,
@@ -159,10 +160,10 @@ const styles = StyleSheet.create({
   fab: {
     position: 'absolute',
     right: 20,
-    bottom: 90,
-    width: 54,
-    height: 54,
-    borderRadius: 27,
+    bottom: 130,
+    width: 70,
+    height: 70,
+    borderRadius: 50,
     backgroundColor: '#2F6FED',
     justifyContent: 'center',
     alignItems: 'center',
@@ -173,7 +174,7 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   fabTexto: {
-    fontSize: 26,
+    fontSize: 35,
     color: '#FFFFFF',
     fontWeight: 'bold',
   },

@@ -1,11 +1,14 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { View, Text, TouchableOpacity, Dimensions, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useFocusEffect } from '@react-navigation/native';
 import { LineChart } from 'react-native-chart-kit';
+import { supabase } from '../services/supabase';
 import { buscarUltimasLeituras, buscarMediasDiarias } from '../services/leiturasService';
 import { listarDispositivos } from '../services/dispositivosService';
 import { useAuth } from '../contexts/AuthContext';
 import styles from './estilos/HistoricoEstilos';
+import BarraNavegacao from '../components/BarraNavegacao';
 
 const { width } = Dimensions.get('window');
 
@@ -47,6 +50,48 @@ function calcularDataInicio(periodo) {
   }
   agora.setDate(agora.getDate() - 30);
   return agora;
+}
+
+// Intervalo mínimo entre atualizações das médias diárias (7 e 30 dias).
+// Uma leitura nova quase não muda a média do dia, então não vale refazer a consulta a cada leitura.
+const INTERVALO_MIN_ATUALIZAR_MEDIAS_MS = 30000;
+
+// Colunas "numeric" podem chegar como texto; converte para número e mantém null se não houver valor
+const paraNumero = (valor) => (valor === null || valor === undefined ? null : Number(valor));
+
+// Converte o texto de data do banco em Date, tolerando formatos como "2026-10-19 15:00:21+00"
+function lerData(valor) {
+  const data = new Date(valor);
+  if (!Number.isNaN(data.getTime())) return data;
+  return new Date(String(valor).replace(' ', 'T').replace(/([+-]\d{2})$/, '$1:00'));
+}
+
+// Converte uma linha da tabela de leituras no formato usado pelo gráfico "Hoje"
+function formatarLeituraDoDia(l) {
+  const data = lerData(l.data_hora);
+  return {
+    instante: data.getTime(),
+    label: data.toLocaleTimeString('pt-BR', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    }),
+    luminosidade: paraNumero(l.luminosidade),
+    ruidos: paraNumero(l.ruidos),
+  };
+}
+
+// Acrescenta uma leitura nova ao gráfico "Hoje": sem repetir, em ordem de horário,
+// mantendo só as QTD_ULTIMAS_LEITURAS mais recentes (a mais antiga sai).
+function adicionarLeitura(atuais, nova) {
+  const item = formatarLeituraDoDia(nova);
+  const base = atuais.filter((l) => l.instante != null);
+
+  if (base.some((l) => l.instante === item.instante)) return atuais;
+
+  return [...base, item]
+    .sort((a, b) => a.instante - b.instante)
+    .slice(-QTD_ULTIMAS_LEITURAS);
 }
 
 export default function Historico({ navigation, route }) {
@@ -97,61 +142,125 @@ export default function Historico({ navigation, route }) {
     resolverDispositivo();
   }, [resolverDispositivo]);
 
-  const carregarLeituras = useCallback(async () => {
-    if (!iddispositivos) return;
+  const requisicaoRef = useRef(0);
+  const periodoRef = useRef(periodoAtivo);
+  const ultimaAtualizacaoMediasRef = useRef(0);
 
-    setCarregando(true);
-    setErro('');
+  // silencioso = atualização em segundo plano: não mostra "Carregando..." nem apaga o gráfico
+  const carregarLeituras = useCallback(
+    async ({ silencioso = false } = {}) => {
+      if (!iddispositivos) return;
 
-    const dataInicio = calcularDataInicio(periodoAtivo);
+      // Só a requisição mais recente pode atualizar a tela
+      // (evita que uma resposta antiga sobrescreva uma mais nova)
+      const idRequisicao = ++requisicaoRef.current;
 
-    if (periodoAtivo === 'Hoje') {
-      const { data, error } = await buscarUltimasLeituras(iddispositivos, dataInicio, QTD_ULTIMAS_LEITURAS);
+      if (!silencioso) {
+        setCarregando(true);
+        setErro('');
+      }
+
+      const dataInicio = calcularDataInicio(periodoAtivo);
+      const hoje = periodoAtivo === 'Hoje';
+
+      // "Hoje": últimas leituras. 7 e 30 dias: média diária calculada no banco (uma linha por dia).
+      const { data, error } = hoje
+        ? await buscarUltimasLeituras(iddispositivos, dataInicio, QTD_ULTIMAS_LEITURAS)
+        : await buscarMediasDiarias(iddispositivos, dataInicio);
+
+      if (idRequisicao !== requisicaoRef.current) return;
+
       setCarregando(false);
 
       if (error) {
-        setErro(error.message);
+        if (!silencioso) setErro(error.message);
+        return;
+      }
+
+      setErro('');
+
+      if (hoje) {
+        setLeituras(
+          (data ?? []).map(formatarLeituraDoDia).sort((a, b) => a.instante - b.instante)
+        );
         return;
       }
 
       setLeituras(
-        (data ?? []).map((l) => ({
-          label: new Date(l.data_hora).toLocaleTimeString('pt-BR', {
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-          }),
-          luminosidade: l.luminosidade !== null ? Number(l.luminosidade) : null,
-          ruidos: l.ruidos !== null ? Number(l.ruidos) : null,
-        }))
+        (data ?? []).map((m) => {
+          const [, mes, dia] = m.dia.split('-');
+          return {
+            instante: null,
+            label: `${dia}/${mes}`,
+            luminosidade: paraNumero(m.luminosidade),
+            ruidos: paraNumero(m.ruidos),
+          };
+        })
       );
-      return;
-    }
+    },
+    [iddispositivos, periodoAtivo]
+  );
 
-    // 7 e 30 dias: a média diária é calculada no banco (uma linha por dia).
-    const { data, error } = await buscarMediasDiarias(iddispositivos, dataInicio);
-    setCarregando(false);
+  // Mantém referências sempre atualizadas para a assinatura do Realtime usar
+  // o período e a função de busca atuais sem precisar se reconectar a cada troca de filtro.
+  const carregarLeiturasRef = useRef(carregarLeituras);
 
-    if (error) {
-      setErro(error.message);
-      return;
-    }
+  useEffect(() => {
+    periodoRef.current = periodoAtivo;
+  }, [periodoAtivo]);
 
-    setLeituras(
-      (data ?? []).map((m) => {
-        const [, mes, dia] = m.dia.split('-');
-        return {
-          label: `${dia}/${mes}`,
-          luminosidade: m.luminosidade !== null ? Number(m.luminosidade) : null,
-          ruidos: m.ruidos !== null ? Number(m.ruidos) : null,
-        };
-      })
-    );
-  }, [iddispositivos, periodoAtivo]);
+  useEffect(() => {
+    carregarLeiturasRef.current = carregarLeituras;
+  }, [carregarLeituras]);
 
+  // Carrega ao abrir a tela e sempre que trocar de dispositivo ou de período
   useEffect(() => {
     carregarLeituras();
   }, [carregarLeituras]);
+
+  // Enquanto a tela está em foco, recebe cada nova leitura do ESP32 em tempo real
+  useFocusEffect(
+    useCallback(() => {
+      if (!iddispositivos) return undefined;
+
+      const canal = supabase
+        .channel(`historico-leituras-${iddispositivos}`)
+        .on(
+          'postgres_changes',
+          {
+            event: 'INSERT',
+            schema: 'public',
+            table: 'leituradossensores',
+            filter: `iddispositivos=eq.${iddispositivos}`,
+          },
+          (payload) => {
+            // "Hoje": acrescenta o ponto novo ao gráfico (e descarta o mais antigo)
+            if (periodoRef.current === 'Hoje') {
+              setLeituras((atuais) => adicionarLeitura(atuais, payload.new));
+              return;
+            }
+
+            // 7 e 30 dias: refaz as médias diárias, no máximo uma vez a cada 30 s
+            const agora = Date.now();
+            if (agora - ultimaAtualizacaoMediasRef.current >= INTERVALO_MIN_ATUALIZAR_MEDIAS_MS) {
+              ultimaAtualizacaoMediasRef.current = agora;
+              carregarLeiturasRef.current({ silencioso: true });
+            }
+          }
+        )
+        .subscribe((status) => {
+          console.log('[Realtime] histórico:', status); // pode remover depois de testar
+
+          // Ao (re)conectar, ou ao voltar para a tela, busca os dados de novo
+          // para cobrir o que aconteceu enquanto ela estava fora de foco
+          if (status === 'SUBSCRIBED') carregarLeiturasRef.current({ silencioso: true });
+        });
+
+      return () => {
+        supabase.removeChannel(canal);
+      };
+    }, [iddispositivos])
+  );
 
   // Mostra só alguns rótulos no eixo X para não poluir o gráfico.
   const passoRotulo = periodoAtivo === '30 Dias' ? 5 : periodoAtivo === 'Hoje' ? 4 : 1;
@@ -276,7 +385,7 @@ export default function Historico({ navigation, route }) {
         ) : exibirApenasAvisoTemperatura ? (
           <View style={styles.avisoTemperaturaWrapper}>
             <Text style={styles.avisoTemperaturaTexto}>
-              ESTAMOS TRABALHANDO NESSA FUNÇÃO!{'\n'}EM BREVE - 2027
+              Estamos Trabalhando Nessa Função!{'\n'}Em Breve - 2027
             </Text>
           </View>
         ) : leituras.length === 0 ? (
@@ -336,7 +445,7 @@ export default function Historico({ navigation, route }) {
                   resizeMode="contain"
                 />
                 <Text style={styles.avisoTemperaturaTextoPequeno}>
-                  Temperatura: ESTAMOS TRABALHANDO NESSA FUNÇÃO! EM BREVE - 2027
+                  Temperatura: Estamos Trabalhando Nessa Função! Em Breve - 2027
                 </Text>
               </View>
             )}
@@ -345,20 +454,10 @@ export default function Historico({ navigation, route }) {
       </View>
 
       {/* Rodapé de navegação */}
-      <View style={styles.bottomBar}>
-        <TouchableOpacity style={styles.bottomItem} onPress={() => navigation.navigate('TelaInicial')}>
-          <Text style={styles.bottomText}>Início</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.bottomItem}>
-          <Text style={[styles.bottomText, styles.bottomTextActive]}>Histórico</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.bottomItem} onPress={() => navigation.navigate('Dispositivos')}>
-          <Text style={styles.bottomText}>Dispositivos</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.bottomItem} onPress={() => navigation.navigate('Perfil')}>
-          <Text style={styles.bottomText}>Perfil</Text>
-        </TouchableOpacity>
-      </View>
+      <BarraNavegacao
+        navigation={navigation}
+        abaAtiva="Historico"
+      />
     </SafeAreaView>
   );
 }
