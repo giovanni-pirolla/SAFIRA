@@ -268,4 +268,4 @@ def iniciar_mqtt():
 
     client.loop_forever()
     
-iniciar_mqtt()
+# iniciar_mqtt()
